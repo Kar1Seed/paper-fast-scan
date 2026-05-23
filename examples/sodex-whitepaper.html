@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoDEX 白皮书 — 中英对照解读</title>
+<style>
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --border: #30363d;
+  --text: #c9d1d9;
+  --text-dim: #8b949e;
+  --highlight: #f0c040;
+  --highlight-bg: rgba(240,192,64,0.15);
+  --accent: #58a6ff;
+  --accent-dim: rgba(88,166,255,0.12);
+  --red: #f85149;
+  --green: #3fb950;
+  --purple: #a371f7;
+  --orange: #d2991d;
+}
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+}
+.header {
+  background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 32px 48px;
+  position: sticky; top:0; z-index:100;
+}
+.header h1 { font-size: 24px; color: #fff; }
+.header p { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
+.container { display:flex; max-width: 1560px; margin:0 auto; }
+/* ---- LEFT NAV ---- */
+.nav {
+  flex:0 0 220px;
+  padding: 24px 16px;
+  position: sticky;
+  top: 96px;
+  align-self: flex-start;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+}
+.nav-title {
+  font-size: 11px; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 14px; font-weight: 700;
+}
+.nav a {
+  display: block;
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 12px;
+  padding: 5px 10px; margin: 2px 0;
+  border-radius: 4px;
+  transition: all 0.15s;
+  border-left: 2px solid transparent;
+}
+.nav a:hover {
+  color: var(--text);
+  background: var(--surface);
+  border-left-color: var(--border);
+}
+.nav a.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-left-color: var(--accent);
+  font-weight: 600;
+}
+.nav .sub { padding-left: 22px; font-size: 11px; }
+.nav .sep { height: 12px; }
+/* ---- MAIN COLUMN ---- */
+.main {
+  flex:1 1 65%;
+  min-width:0;
+  padding: 32px 40px 80px;
+  border-right: 1px solid var(--border);
+}
+.main h2 {
+  font-size: 20px; color: var(--accent); margin: 48px 0 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.main h2:first-child { margin-top: 0; }
+.main h3 { font-size: 16px; color: var(--purple); margin: 28px 0 10px; }
+.en-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin: 16px 0 8px;
+  position: relative;
+}
+.en-block::before {
+  content: "EN";
+  position: absolute; top: -10px; left: 16px;
+  background: #1f6feb; color:#fff;
+  font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 4px;
+}
+.cn-block {
+  background: transparent;
+  padding: 14px 22px;
+  margin: 0 0 24px;
+  border-left: 3px solid var(--green);
+  color: #bdc6d0;
+}
+.cn-block::before {
+  content: "中文"; display: block;
+  font-size: 11px; font-weight: 700; color: var(--green);
+  margin-bottom: 6px;
+}
+.hl { color: var(--highlight); font-weight: 600; }
+.formula-box {
+  background: var(--highlight-bg);
+  border: 1px solid rgba(240,192,64,0.3);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 12px 0;
+  font-family: "JetBrains Mono", "Consolas", monospace;
+  font-size: 14px;
+  color: var(--highlight);
+  overflow-x: auto;
+}
+.example-box {
+  background: rgba(63,185,80,0.08);
+  border: 1px solid rgba(63,185,80,0.25);
+  border-radius: 6px;
+  padding: 14px 18px;
+  margin: 10px 0;
+  font-size: 14px;
+}
+.example-box::before { content: "📝 示例："; color: var(--green); font-weight: 600; display:block; margin-bottom:6px; }
+/* ---- RIGHT SIDEBAR ---- */
+.sidebar {
+  flex:0 0 380px;
+  padding: 24px 20px;
+  position: sticky;
+  top: 96px;
+  align-self: flex-start;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+.sidebar h3 {
+  font-size: 14px; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 1px; margin: 24px 0 10px; border-bottom: 1px solid var(--border);
+  padding-bottom: 6px;
+}
+.sidebar h3:first-child { margin-top: 0; }
+.glossary-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 14px;
+  margin: 8px 0;
+  font-size: 13px;
+}
+.glossary-item .term {
+  color: var(--highlight); font-weight: 700; font-size: 14px;
+}
+.glossary-item .def { color: var(--text-dim); margin-top: 4px; }
+.mini-formula {
+  background: var(--highlight-bg);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 6px 0;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--highlight);
+  overflow-x: auto;
+}
+/* ---- DIAGRAM ---- */
+.diagram-section {
+  max-width: 1100px; margin: 60px auto 40px;
+  padding: 32px 20px;
+}
+.diagram-section h2 { text-align:center; color: var(--accent); margin-bottom: 32px; font-size: 22px; }
+svg.diagram { display:block; margin: 0 auto; }
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius:3px; }
+@media (max-width: 960px) {
+  .container { flex-direction: column; }
+  .sidebar { flex: none; position: static; max-height: none; padding: 20px 40px; }
+  .main { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔬 SoDEX Whitepaper — 中英对照深度解读</h1>
+  <p>SoSoValue 生态 · 高性能订单簿去中心化交易所 · 基于 ValueChain</p>
+</div>
+
+<div class="container">
+
+<!-- ======================== LEFT NAVIGATION ======================== -->
+<nav class="nav">
+  <div class="nav-title">📑 目录 Contents</div>
+  <a href="#sec1">一、为什么构建 SoDEX</a>
+  <a href="#sec1-1" class="sub">三大痛点</a>
+  <div class="sep"></div>
+  <a href="#sec2">二、SoDEX 工作原理</a>
+  <a href="#sec2-1" class="sub">全面回应行业痛点</a>
+  <div class="sep"></div>
+  <a href="#sec3">三、为什么自建 ValueChain</a>
+  <a href="#sec3-1" class="sub">集装箱式区块链</a>
+  <div class="sep"></div>
+  <a href="#sec4">四、Mirror Protocol 跨链桥</a>
+  <div class="sep"></div>
+  <a href="#sec5">五、交易机制</a>
+  <a href="#sec5-1" class="sub">手续费</a>
+  <a href="#sec5-2" class="sub">保证金模式</a>
+  <a href="#sec5-3" class="sub">分级杠杆与维持保证金</a>
+  <a href="#sec5-4" class="sub">清算三段式</a>
+  <a href="#sec5-5" class="sub">价格体系</a>
+  <div class="sep"></div>
+  <a href="#sec6">六、SLP 做市金库</a>
+  <div class="sep"></div>
+  <a href="#sec7">七、SoPoints 积分激励</a>
+  <div class="sep"></div>
+  <a href="#diagram">🏗️ 架构全景图</a>
+</nav>
+
+<!-- ======================== MAIN CONTENT ======================== -->
+<div class="main">
+
+<!-- SECTION 1: Why We Built SoDEX -->
+<h2 id="sec1">一、Why We Built SoDEX / 为什么构建 SoDEX</h2>
+
+<div class="en-block">
+The desire to trade, invest, and preserve wealth is universal. Yet millions of investors worldwide face a <span class="hl">threefold dilemma</span>: <span class="hl">Exclusivity of Traditional Finance (TradFi)</span> denies access to hundreds of millions; <span class="hl">Centralized Exchanges (CEXs)</span> offer performance but require users to surrender custody and trust opaque systems; and <span class="hl">early DeFi infrastructure</span> — particularly <span class="hl">Automated Market Makers (AMMs)</span> — suffers from <span class="hl">capital inefficiency</span>, <span class="hl">high slippage</span>, and <span class="hl">poor user experience</span>. Neither TradFi, CEXs, nor early DeFi has delivered an ideal trading environment that combines <span class="hl">high performance</span>, <span class="hl">security</span>, <span class="hl">transparency</span>, and <span class="hl">universal access</span>.
+</div>
+<div class="cn-block">
+交易、投资、保值是人类普遍需求。但全球亿万投资者面临<span class="hl">三重困境</span>：<span class="hl">传统金融 (TradFi)</span> 将数亿人拒之门外；<span class="hl">中心化交易所 (CEX)</span> 性能强但要求交出资产托管权、信任不透明系统；<span class="hl">早期 DeFi</span>——尤其是<span class="hl">自动做市商 (AMM)</span>——存在<span class="hl">资金效率低</span>、<span class="hl">滑点大</span>和<span class="hl">用户体验差</span>的问题。TradFi、CEX 还是早期 DeFi，都没有实现同时兼具<span class="hl">高性能</span>、<span class="hl">安全性</span>、<span class="hl">透明度</span>和<span class="hl">普惠准入</span>的理想交易环境。
+</div>
+
+<h3 id="sec1-1">三大痛点详解</h3>
+
+<div class="en-block">
+<b>1. TradFi Exclusivity:</b> Despite strict regulation, traditional finance remains highly <span class="hl">exclusionary</span> — hundreds of millions are denied basic financial services due to <span class="hl">geographic, identity, or capital barriers</span>, not lack of demand.
+</div>
+<div class="cn-block">
+<b>1. 传统金融排他性：</b>尽管监管严格，传统金融依然高度<span class="hl">排斥性</span>——数亿人因<span class="hl">地域、身份、资金门槛</span>被拒绝，而非没有需求。
+</div>
+
+<div class="en-block">
+<b>2. CEX Trust Dilemma:</b> CEXs offer high-performance trading, but their core issue is <span class="hl">trust</span>. History shows unregulated centralized finance inevitably exploits such trust — users cannot <span class="hl">verify internal operations</span>, creating risks like the <span class="hl">FTX collapse</span>.
+</div>
+<div class="cn-block">
+<b>2. CEX 信任危机：</b>CEX 提供高性能交易，但核心问题是<span class="hl">信任</span>。历史证明，不受监管的中心化金融必然滥用这种信任——用户无法<span class="hl">验证内部操作</span>，造成<span class="hl">FTX 暴雷</span>等风险。
+</div>
+
+<div class="en-block">
+<b>3. DeFi Performance Bottlenecks:</b> <span class="hl">AMMs</span> spread liquidity across wide price ranges, leaving capital idle. <span class="hl">Traders lack precise execution control</span>, facing high <span class="hl">slippage</span>. <span class="hl">General-purpose blockchains</span> with low throughput cannot support high-frequency trading.
+</div>
+<div class="cn-block">
+<b>3. DeFi 性能瓶颈：</b><span class="hl">AMM</span> 将流动性分散到宽价格区间，资本闲置。<span class="hl">交易者无法精确控制执行价格</span>，面临高<span class="hl">滑点</span>。<span class="hl">通用公链</span>吞吐量低，无法支撑高频交易。
+</div>
+
+<!-- SECTION 2: How SoDEX Works -->
+<h2 id="sec2">二、How SoDEX Works / SoDEX 工作原理</h2>
+
+<div class="en-block">
+SoDEX is a <span class="hl">high-performance order book decentralized exchange (DEX)</span>. It combines the <span class="hl">millisecond-level trading experience</span> and <span class="hl">deep liquidity</span> of <span class="hl">centralized order books (CLOB)</span> with the <span class="hl">non-custodial</span>, <span class="hl">transparent</span>, and <span class="hl">censorship-resistant</span> attributes of decentralized systems. All trades, order matching, and settlement logic execute <span class="hl">on-chain via smart contracts</span> — every operation is public, traceable, and verifiable.
+</div>
+<div class="cn-block">
+SoDEX 是一个<span class="hl">高性能订单簿去中心化交易所 (DEX)</span>。它将<span class="hl">中心化订单簿 (CLOB)</span> 的<span class="hl">毫秒级交易体验</span>和<span class="hl">深度流动性</span>，与去中心化系统的<span class="hl">非托管</span>、<span class="hl">透明</span>和<span class="hl">抗审查</span>属性相结合。所有交易、撮合和结算逻辑都<span class="hl">通过智能合约在链上执行</span>——每一步操作都是公开、可追溯、可验证的。
+</div>
+
+<h3 id="sec2-1">Comprehensive Response / 全面回应行业痛点</h3>
+
+<div class="en-block">
+<b>Seamless UX:</b> Abstracting <span class="hl">gas fees</span> and simplifying wallet interactions — users enjoy a CEX-like smooth experience. &nbsp;
+<b>Order Book Precision:</b> Supporting <span class="hl">limit orders</span> and <span class="hl">stop orders</span> at multiple levels, eliminating <span class="hl">slippage</span> common in AMMs. &nbsp;
+<b>Institutional-Grade Security:</b> Assets in <span class="hl">non-custodial wallets</span> enhanced by institutional custody; on-chain <span class="hl">KYT (Know-Your-Transaction)</span> tools monitor risk addresses in real time.
+</div>
+<div class="cn-block">
+<b>无缝体验：</b>抽象化<span class="hl">Gas 费</span>、简化钱包交互——用户享受类 CEX 的流畅体验。&nbsp;
+<b>订单簿精度：</b>支持多级<span class="hl">限价单</span>和<span class="hl">止损单</span>，消除 AMM 常见的<span class="hl">滑点</span>。&nbsp;
+<b>机构级安全：</b>资产在<span class="hl">非托管钱包</span>中，辅以机构托管方案；链上<span class="hl">KYT（了解你的交易）</span>实时监控风险地址。
+</div>
+
+<!-- SECTION 3: ValueChain -->
+<h2 id="sec3">三、Why We Built ValueChain / 为什么自建 ValueChain</h2>
+
+<div class="en-block">
+As the SoDEX team began designing, they hit a wall: <span class="hl">no existing blockchain</span> could support <span class="hl">Nasdaq-grade throughput</span> for order books, <span class="hl">Visa-level transaction concurrency</span> for end users, <span class="hl">native on-chain order books</span>, modular execution environments, <span class="hl">EVM composability</span>, and full <span class="hl">decentralization</span> — all simultaneously. So they built their own: <span class="hl">ValueChain</span>.
+</div>
+<div class="cn-block">
+SoDEX 团队在设计过程中发现：<span class="hl">没有任何现成公链</span>能同时支持<span class="hl">纳斯达克级订单簿吞吐量</span>、<span class="hl">Visa 级终端交易并发</span>、<span class="hl">原生链上订单簿</span>、模块化执行环境、<span class="hl">EVM 可组合性</span>和完全<span class="hl">去中心化</span>。所以他们自己建了一条链：<span class="hl">ValueChain</span>。
+</div>
+
+<h3 id="sec3-1">Containerized Blockchain Architecture / 集装箱式区块链架构</h3>
+
+<div class="en-block">
+ValueChain uses a <span class="hl">containerized architecture</span>: a <span class="hl">HostChain</span> produced by consensus hosts multiple <span class="hl">guest chains</span> — an <span class="hl">EVM system chain</span> (unified account system) and several <span class="hl">application chains (appchains)</span>. Currently: <span class="hl">Spot appchain</span> for SoDEX Spot, <span class="hl">Perps appchain</span> for SoDEX Perpetuals. While each guest-chain is <span class="hl">logically independent</span>, data is <span class="hl">physically colocated</span> within HostChain blocks, enabling <span class="hl">instant interoperability</span>.
+</div>
+<div class="cn-block">
+ValueChain 采用<span class="hl">集装箱式架构</span>：由共识算法产出的<span class="hl">HostChain（主链）</span>承载多条<span class="hl">Guest Chain（客链）</span>——一条<span class="hl">EVM 系统链</span>（统一账户系统）和多条<span class="hl">应用链 (Appchain)</span>。目前：<span class="hl">现货 Appchain</span> 跑 SoDEX 现货，<span class="hl">合约 Appchain</span> 跑 SoDEX 永续合约。各客链<span class="hl">逻辑独立</span>，但数据<span class="hl">物理共存</span>于 HostChain 区块中，实现<span class="hl">即时跨链互通</span>。
+</div>
+
+<!-- SECTION 4: Mirror Protocol -->
+<h2 id="sec4">四、Mirror Protocol — Cross-Chain Asset Bridge / 跨链资产桥</h2>
+
+<div class="en-block">
+The <span class="hl">Mirror Protocol</span> is a <span class="hl">trust-minimized asset bridge</span> that brings external assets onto ValueChain. When users deposit assets (USDC, BTC, SOL, etc.) on external chains, Mirror Protocol <span class="hl">mints equivalent mirror tokens</span> on the SoDEX EVM chain. Withdrawals reverse the process: <span class="hl">burn mirror tokens</span> → release native assets. Security relies on <span class="hl">MPC + TEE-based validator architecture</span> — a set of secure distributed nodes with <span class="hl">Trusted Execution Environments</span> collectively validate events, ensuring no single point of failure.
+</div>
+<div class="cn-block">
+<span class="hl">Mirror Protocol</span> 是一个<span class="hl">去信任化资产桥</span>，将外部资产引入 ValueChain。用户在外部链存入资产（USDC、BTC、SOL 等）后，Mirror Protocol 在 SoDEX EVM 链上<span class="hl">铸造等量镜像代币</span>。提现反向操作：<span class="hl">销毁镜像代币</span>→释放原链资产。安全依赖<span class="hl">MPC + TEE 验证者架构</span>——一组拥有<span class="hl">可信执行环境 (TEE)</span> 的安全分布式节点集体验证事件，确保无单点故障。
+</div>
+
+<!-- SECTION 5: Trading Mechanics -->
+<h2 id="sec5">五、Trading Mechanics / 交易机制</h2>
+
+<h3 id="sec5-1">5.1 Trading Fees / 手续费</h3>
+
+<div class="en-block">
+Fees are determined by your rolling <span class="hl">14-day volume</span> and finalized at the <span class="hl">end of each UTC day</span>. Your fee tier applies across all markets. Perps and Spot volume are combined with <span class="hl">Spot receiving 2× weight</span>. Maker fees default to the same rate as taker but can become <span class="hl">negative (rebates)</span> if your <span class="hl">14D maker volume share</span> reaches a threshold.
+</div>
+<div class="cn-block">
+手续费基于<span class="hl">14 天滚动交易量</span>分级，每日 UTC 零点结算。一个等级适用于所有市场。合约和现货量合并计算，<span class="hl">现货权重 ×2</span>。Maker 费率默认与 Taker 相同，但若<span class="hl">14 天 Maker 成交占比</span>达标，可降至<span class="hl">负数（返佣）</span>。
+</div>
+
+<div class="formula-box">14D加权交易量 = 14D合约量 + 2 × 14D现货量</div>
+<div class="formula-box">Taker手续费 = 基础Taker费率 × (1 − 质押折扣率)</div>
+
+<h3 id="sec5-2">5.2 Margin Modes / 保证金模式</h3>
+
+<div class="en-block">
+<b><span class="hl">Cross Margin</span> (Default):</b> All available funds pooled as shared collateral across all open positions. Highest capital efficiency, but one losing position can liquidate the entire account. &nbsp;
+<b><span class="hl">Isolated Margin</span>:</b> A specific, fixed amount allocated to a single position. Risk is isolated — liquidation only loses that position's margin.
+</div>
+<div class="cn-block">
+<b><span class="hl">全仓模式</span>（默认）：</b>所有可用资金共享为全部仓位的抵押品。资金效率最高，但一个亏损仓位可能拖垮整个账户。&nbsp;
+<b><span class="hl">逐仓模式</span>：</b>固定金额分配给单个仓位。风险隔离——爆仓只亏该仓位的保证金。
+</div>
+
+<div class="formula-box">初始保证金 = (仓位大小 × Mark Price) ÷ 杠杆倍数</div>
+
+<div class="example-box">
+BTC 现价 $100,000，开 10x 杠杆做多 0.1 BTC<br>
+名义价值 = 0.1 × 100,000 = <b>$10,000</b><br>
+初始保证金 = 10,000 ÷ 10 = <b>$1,000</b><br>
+→ 用 $1,000 控制 $10,000 仓位，平台"借"你 $9,000
+</div>
+
+<h3 id="sec5-3">5.3 Tiered Leverage & Maintenance Margin / 分级杠杆与维持保证金</h3>
+
+<div class="en-block">
+SoDEX uses a <span class="hl">tiered leverage system</span>. The <span class="hl">Maintenance Margin</span> — the minimum equity to keep a position open — is calculated per tier. The <span class="hl">Maintenance Margin Rate</span> for a tier equals <span class="hl">half the Initial Margin Rate at max leverage</span>. A <span class="hl">recursive Maintenance Deduction</span> ensures the margin function is <span class="hl">continuous</span> across tier boundaries — no sudden jumps.
+</div>
+<div class="cn-block">
+SoDEX 采用<span class="hl">分级杠杆系统</span>。<span class="hl">维持保证金</span>——保持仓位的最低权益——按等级计算。<span class="hl">维持保证金率</span> = <span class="hl">该等级最大杠杆对应的初始保证金率 ÷ 2</span>。<span class="hl">递归维持扣减额</span>确保跨等级时保证金函数<span class="hl">连续</span>——不会出现突变跳点。
+</div>
+
+<div class="formula-box">维持保证金 = 名义仓位价值 × 维持保证金率 − 维持扣减额</div>
+<div class="formula-box">维持保证金率(Tier=n) = 初始保证金率(最大杠杆, Tier=n) ÷ 2</div>
+<div class="formula-box">
+扣减额(Tier=0) = 0<br>
+扣减额(Tier=n) = 扣减额(Tier=n−1) + 仓位下限ₙ × (维持率ₙ − 维持率ₙ₋₁)
+</div>
+
+<div class="example-box">
+假设 Tier 1 最大杠杆 20x → 初始保证金率 = 5% → <b>维持保证金率 = 2.5%</b><br>
+$100,000 仓位 → 维持保证金 = 100,000 × 2.5% = <b>$2,500</b><br>
+即：你的权益跌破 $2,500 时触发清算<br>
+换言之：保证金跌到开仓时的一半，就清算
+</div>
+
+<h3 id="sec5-4">5.4 Liquidations — Three-Stage Process / 清算三段式</h3>
+
+<div class="en-block">
+When portfolio margin falls below <span class="hl">maintenance margin</span>, liquidation is triggered — but not immediate forced selling. SoDEX uses a <span class="hl">staged approach</span>:<br><br>
+<b>Stage 1 — Market Orders:</b> The system sends market orders into the <span class="hl">order book</span> to close the position naturally.<br>
+<b>Stage 2 — Backstop Liquidation:</b> If insufficient, the position enters <span class="hl">backstop liquidation</span> handled by designated liquidators.<br>
+<b>Stage 3 — Auto-Deleveraging (ADL):</b> In extreme cases where losses exceed portfolio value, <span class="hl">profitable counterparties</span> are ranked by <span class="hl">unrealized PnL × leverage</span> and forcibly closed at the previous <span class="hl">mark price</span> to prevent bad debt.
+</div>
+<div class="cn-block">
+当组合保证金跌破<span class="hl">维持保证金</span>时触发清算——但不是立刻暴力砸盘。SoDEX 采用<span class="hl">渐进式清算</span>：<br><br>
+<b>阶段 1 — 挂市价单：</b>系统将仓位以市价单挂入<span class="hl">订单簿</span>，让正常交易吃掉。<br>
+<b>阶段 2 — 后备清算：</b>若不够，仓位进入<span class="hl">后备清算</span>，由指定清算人处理。<br>
+<b>阶段 3 — 自动减仓 (ADL)：</b>极端情况下亏损超过账户价值时，按<span class="hl">未实现盈亏 × 杠杆</span>排序盈利对手方，以上一<span class="hl">标记价格</span>强制平仓，防止坏账。
+</div>
+
+<div class="formula-box">
+全仓触发条件：账户总权益 &lt; Σ(所有全仓仓位的维持保证金)<br>
+其中：总权益 = 余额 + 全仓未实现盈亏 − 逐仓初始保证金
+</div>
+
+<div class="formula-box">
+逐仓触发条件（每个仓位独立）：该仓位保证金 &lt; 该仓位维持保证金
+</div>
+
+<div class="example-box">
+<b>全仓清算案例：</b><br>
+$10,000 本金，10x 杠杆做多 1 BTC @ $100,000<br>
+初始保证金 = $10,000，维持保证金 = $2,500 (2.5%)<br><br>
+BTC 跌至 $92,000：<br>
+&nbsp;&nbsp;未实现亏损 = −$8,000<br>
+&nbsp;&nbsp;权益 = 10,000 − 8,000 = <b>$2,000</b><br>
+&nbsp;&nbsp;维持保证金 = 92,000 × 2.5% = <b>$2,300</b><br>
+&nbsp;&nbsp;2,000 &lt; 2,300 → 🔴 <b>触发清算！</b>
+</div>
+
+<h3 id="sec5-5">5.5 Price System — Index Price & Mark Price / 价格体系</h3>
+
+<div class="en-block">
+<b><span class="hl">Index Price</span>:</b> <span class="hl">Weighted median</span> of spot mid-prices from major high-liquidity exchanges. Exchanges with <span class="hl">no trade in 60 seconds</span> are excluded — preventing stale data manipulation.<br><br>
+<b><span class="hl">Mark Price</span>:</b> A <span class="hl">manipulation-resistant reference price</span> used for margin, liquidation, and unrealized PnL. It's the <span class="hl">median of four sources</span>: Index Price, Smoothed Index Price, SoDEX Local Price, and External Perp Mid Price.
+</div>
+<div class="cn-block">
+<b><span class="hl">指数价格</span>：</b>来自多家主流高流动性交易所现货中间价的<span class="hl">加权中位数</span>。<span class="hl">60 秒内无成交</span>的交易所被剔除——防止过时数据操纵。<br><br>
+<b><span class="hl">标记价格</span>：</b><span class="hl">抗操纵参考价格</span>，用于保证金、清算和未实现盈亏计算。取<span class="hl">四个来源的中位数</span>：指数价格、平滑指数价格、SoDEX 本地价格、外部合约中间价。
+</div>
+
+<div class="formula-box">
+Mark Price = Median(指数价格, 平滑指数价格, SoDEX本地价格, 外部合约中间价)
+</div>
+
+<div class="formula-box">
+SoDEX本地价格 = Median(最优买价, 最优卖价, 最后成交价)<br>
+平滑指数价格 = 指数价格 + EMA₁₅₀秒(指数价格 − 中间价)
+</div>
+
+<!-- SECTION 6: SLP Vault -->
+<h2 id="sec6">六、SLP Vault — Liquidity Provider / 做市金库</h2>
+
+<div class="en-block">
+The <span class="hl">SoDEX Liquidity Provider (SLP)</span> is a community-owned <span class="hl">Market Making Pool</span>. Users deposit assets (e.g. <span class="hl">sMAG7.ssi</span>) and earn a <span class="hl">dual yield</span>: <b>① Index Staking Yield</b> — deposited tokens continue accruing regular index yield + <span class="hl">SOSO airdrop eligibility</span>; <b>② Market-Making Yield</b> — the same deposit is used for market-making, earning a share of exchange liquidity rewards and fee rebates.
+</div>
+<div class="cn-block">
+<span class="hl">SoDEX 流动性提供者 (SLP)</span> 是社区共有的<span class="hl">做市资金池</span>。用户存入资产（如 <span class="hl">sMAG7.ssi</span>）获取<span class="hl">双重收益</span>：<b>① 指数质押收益</b>——存入代币继续累积指数收益 + <span class="hl">SOSO 空投资格</span>；<b>② 做市收益</b>——同一笔存款同时用于做市，分得交易所流动性奖励和手续费返佣。
+</div>
+
+<!-- SECTION 7: SoPoints -->
+<h2 id="sec7">七、SoPoints — Incentive System / 积分激励</h2>
+
+<div class="en-block">
+Users accumulate <span class="hl">SoPoints</span> through <span class="hl">trading</span>, <span class="hl">market-making</span>, and <span class="hl">staking $SOSO</span>. Points operate on a <span class="hl">Season</span> mechanism (currently <span class="hl">Season 1</span>). Users can <span class="hl">Stake $SOSO</span> tokens to earn additional rewards. The point system is widely understood to correlate with future airdrop allocations.
+</div>
+<div class="cn-block">
+用户通过<span class="hl">交易</span>、<span class="hl">做市</span>和<span class="hl">质押 $SOSO</span> 累积<span class="hl">SoPoints</span>。积分采用<span class="hl">赛季</span>机制（当前为<span class="hl">第一赛季</span>）。用户可以<span class="hl">质押 $SOSO 代币</span>获取额外奖励。积分体系被广泛认为与未来的空投分配挂钩。
+</div>
+
+</div><!-- /main -->
+
+<!-- ======================== RIGHT SIDEBAR ======================== -->
+<div class="sidebar">
+
+<h3>📖 术语表 Glossary</h3>
+
+<div class="glossary-item">
+  <div class="term">AMM (自动做市商)</div>
+  <div class="def">用数学公式（如 x×y=k）自动定价的交易模式，不需要对手方。代表：Uniswap。缺点：滑点大、资金效率低。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Order Book / CLOB (订单簿)</div>
+  <div class="def">传统交易所模式，撮合买卖双方挂单。精确执行、零滑点。纳斯达克用的就是 CLOB。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">DEX (去中心化交易所)</div>
+  <div class="def">运行在区块链上的交易所，用户自己保管资产，无需信任第三方。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">CEX (中心化交易所)</div>
+  <div class="def">由中心化实体运营的交易所（如币安），用户将资产托管给平台。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Slippage (滑点)</div>
+  <div class="def">期望成交价与实际成交价之间的偏差。AMM 滑点大，订单簿零滑点。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Perps (永续合约)</div>
+  <div class="def">没有到期日的期货合约，通过资金费率锚定现货价格。币圈最主流衍生品。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Collateral (抵押品)</div>
+  <div class="def">开杠杆仓位需要质押的资产，用于覆盖亏损风险。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Liquidation (清算)</div>
+  <div class="def">抵押品不足以覆盖亏损时，系统强制平仓。SoDEX 采用三段渐进清算。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Mark Price (标记价格)</div>
+  <div class="def">清算和保证金计算用的"公允价格"，非最新成交价。SoDEX 取四种来源的中位数，防插针操纵。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Cross Margin (全仓)</div>
+  <div class="def">所有仓位共享保证金池，资金效率高，但一个爆仓可能牵连全部。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Isolated Margin (逐仓)</div>
+  <div class="def">每个仓位独立保证金，风险隔离，爆仓只亏该仓位。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">ADL (自动减仓)</div>
+  <div class="def">最后防线：盈利最多×杠杆最高的对手方被强制平仓，防止平台坏账。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">MPC + TEE</div>
+  <div class="def">多方安全计算 + 可信执行环境。Mirror Protocol 跨链桥的安全基石，确保无单点可作恶。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">KYT (了解你的交易)</div>
+  <div class="def">链上实时风控工具，识别和监控风险地址，兼顾去中心化精神与合规需求。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">SLP (SoDEX 流动性提供者)</div>
+  <div class="def">社区共有做市资金池。存入资产享受双重收益：指数质押收益 + 做市手续费分成。</div>
+</div>
+
+<div class="glossary-item">
+  <div class="term">Appchain (应用链)</div>
+  <div class="def">ValueChain 架构中专用于单个应用的链。Spot 和 Perps 各有独立 Appchain，数据物理共存。</div>
+</div>
+
+<h3>🧮 核心公式汇总</h3>
+
+<div class="mini-formula">初始保证金 = (仓位 × Mark) ÷ 杠杆</div>
+<div class="mini-formula">维持保证金 = 名义价值 × 维持率 − 扣减额</div>
+<div class="mini-formula">维持率 = 初始保证金率(最大杠杆) ÷ 2</div>
+<div class="mini-formula">扣减额ₙ = 扣减额ₙ₋₁ + 下限ₙ × (维持率ₙ − 维持率ₙ₋₁)</div>
+<div class="mini-formula">14D加权量 = 合约量 + 2 × 现货量</div>
+<div class="mini-formula">Mark Price = Median(指数, 平滑, 本地, 外部中间价)</div>
+<div class="mini-formula">全仓触发: 总权益 &lt; Σ维持保证金</div>
+<div class="mini-formula">逐仓触发: 仓保证金 &lt; 仓维持保证金</div>
+
+<h3>📊 分级杠杆表（BTC）</h3>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+<tr style="background:var(--surface);color:var(--highlight);">
+  <td style="padding:6px 10px;border:1px solid var(--border);">名义仓位 (USDC)</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);">最大杠杆</td>
+</tr>
+<tr>
+  <td style="padding:6px 10px;border:1px solid var(--border);">0 – 4,000,000</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);">更高 (如 50x)</td>
+</tr>
+<tr style="background:var(--surface);">
+  <td style="padding:6px 10px;border:1px solid var(--border);">&gt; 4,000,000</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);color:var(--red);">大幅降低</td>
+</tr>
+</table>
+
+<h3>📊 分级杠杆表（ETH/SOL）</h3>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+<tr style="background:var(--surface);color:var(--highlight);">
+  <td style="padding:6px 10px;border:1px solid var(--border);">名义仓位 (USDC)</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);">最大杠杆</td>
+</tr>
+<tr>
+  <td style="padding:6px 10px;border:1px solid var(--border);">0 – 4,000,000</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);">较高</td>
+</tr>
+<tr style="background:var(--surface);">
+  <td style="padding:6px 10px;border:1px solid var(--border);">&gt; 4,000,000</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);color:var(--red);">降低</td>
+</tr>
+</table>
+
+<h3>📊 分级杠杆表（DOGE / LINK）</h3>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+<tr style="background:var(--surface);color:var(--highlight);">
+  <td style="padding:6px 10px;border:1px solid var(--border);">资产</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);">上限</td>
+</tr>
+<tr>
+  <td style="padding:6px 10px;border:1px solid var(--border);">DOGE</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);">$2,000,000</td>
+</tr>
+<tr style="background:var(--surface);">
+  <td style="padding:6px 10px;border:1px solid var(--border);">LINK</td>
+  <td style="padding:6px 10px;border:1px solid var(--border);color:var(--red);">$1,000,000</td>
+</tr>
+</table>
+
+<h3>🛡️ 清算三阶段</h3>
+<div style="font-size:12px;color:var(--text-dim);line-height:1.8;">
+① <b style="color:var(--green);">挂市价单</b> → 订单簿自然成交<br>
+② <b style="color:var(--orange);">后备清算人</b> → 指定做市商接盘<br>
+③ <b style="color:var(--red);">ADL 减仓</b> → 盈利对手方强制平仓
+</div>
+
+</div><!-- /sidebar -->
+</div><!-- /container -->
+
+<!-- ======================== DIAGRAM ======================== -->
+<div class="diagram-section" id="diagram">
+<h2>🏗️ SoDEX 架构全景图 Architecture Overview</h2>
+
+<svg class="diagram" viewBox="0 0 1060 820" width="100%" style="max-width:1060px;">
+  <defs>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <linearGradient id="gUser" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#1f6feb"/></linearGradient>
+    <linearGradient id="gDex" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a371f7"/><stop offset="100%" stop-color="#8250df"/></linearGradient>
+    <linearGradient id="gChain" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#2ea043"/></linearGradient>
+    <linearGradient id="gBridge" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d2991d"/><stop offset="100%" stop-color="#b8860b"/></linearGradient>
+    <linearGradient id="gVault" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0883e"/><stop offset="100%" stop-color="#d2691e"/></linearGradient>
+    <linearGradient id="gExt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8b949e"/><stop offset="100%" stop-color="#6e7681"/></linearGradient>
+    <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#58a6ff"/></marker>
+    <marker id="arrowGreen" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#3fb950"/></marker>
+    <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#d2991d"/></marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="1060" height="820" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+  <!-- ===== LAYER 1: Users ===== -->
+  <text x="530" y="32" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">👤 用户层 USER LAYER</text>
+  <rect x="80" y="44" width="160" height="38" rx="8" fill="url(#gUser)" opacity="0.9"/>
+  <text x="160" y="68" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Trader 交易者</text>
+  <rect x="330" y="44" width="160" height="38" rx="8" fill="url(#gUser)" opacity="0.9"/>
+  <text x="410" y="68" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">LP 做市商</text>
+  <rect x="580" y="44" width="160" height="38" rx="8" fill="url(#gUser)" opacity="0.9"/>
+  <text x="660" y="68" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Staker 质押者</text>
+  <rect x="830" y="44" width="160" height="38" rx="8" fill="url(#gUser)" opacity="0.9"/>
+  <text x="910" y="68" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Quant 量化机构</text>
+
+  <!-- Layer label -->
+  <text x="530" y="112" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">━━━━━━━━━━ ⚡ 交互层 INTERACTION ━━━━━━━━━━</text>
+
+  <!-- ===== LAYER 2: SoDEX Core ===== -->
+  <text x="530" y="142" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700" letter-spacing="3">🏛️ SoDEX 核心层 CORE</text>
+
+  <!-- Spot DEX -->
+  <rect x="30" y="158" width="310" height="130" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5"/>
+  <rect x="30" y="158" width="310" height="28" rx="10" fill="url(#gDex)"/>
+  <rect x="30" y="176" width="310" height="10" fill="url(#gDex)"/>
+  <text x="185" y="177" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">📊 SoDEX Spot 现货交易</text>
+  <text x="50" y="210" fill="#c9d1d9" font-size="11">◈ 限价单 / 市价单 / 止损单</text>
+  <text x="50" y="230" fill="#c9d1d9" font-size="11">◈ 订单簿撮合 · 零滑点</text>
+  <text x="50" y="250" fill="#c9d1d9" font-size="11">◈ 全仓 / 逐仓 保证金模式</text>
+  <text x="50" y="270" fill="#c9d1d9" font-size="11">◈ OCO 止盈止损 (TP/SL)</text>
+
+  <!-- Arrow Spot → Perps -->
+  <line x1="340" y1="223" x2="380" y2="223" stroke="#a371f7" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- Perps DEX -->
+  <rect x="385" y="158" width="310" height="130" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5"/>
+  <rect x="385" y="158" width="310" height="28" rx="10" fill="url(#gDex)"/>
+  <rect x="385" y="176" width="310" height="10" fill="url(#gDex)"/>
+  <text x="540" y="177" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">⚡ SoDEX Perps 永续合约</text>
+  <text x="405" y="210" fill="#c9d1d9" font-size="11">◈ 分级杠杆 (最大 ~50x)</text>
+  <text x="405" y="230" fill="#c9d1d9" font-size="11">◈ 维持保证金 + 递归扣减</text>
+  <text x="405" y="250" fill="#c9d1d9" font-size="11">◈ 三段渐进清算</text>
+  <text x="405" y="270" fill="#c9d1d9" font-size="11">◈ Mark Price 四源中位数防操纵</text>
+
+  <!-- SLP Vault -->
+  <rect x="720" y="158" width="300" height="130" rx="10" fill="#161b22" stroke="#f0883e" stroke-width="1.5"/>
+  <rect x="720" y="158" width="300" height="28" rx="10" fill="url(#gVault)"/>
+  <rect x="720" y="176" width="300" height="10" fill="url(#gVault)"/>
+  <text x="870" y="177" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">💰 SLP 做市金库</text>
+  <text x="740" y="210" fill="#c9d1d9" font-size="11">◈ 存入 sMAG7.ssi 双重收益</text>
+  <text x="740" y="230" fill="#c9d1d9" font-size="11">◈ 指数质押收益 + 做市分润</text>
+  <text x="740" y="250" fill="#c9d1d9" font-size="11">◈ SOSO 空投资格保留</text>
+  <text x="740" y="270" fill="#c9d1d9" font-size="11">◈ SoPoints 积分加速</text>
+
+  <!-- ===== LAYER 3: ValueChain ===== -->
+  <text x="530" y="320" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="700" letter-spacing="3">⛓️ ValueChain 基础设施层 INFRASTRUCTURE</text>
+
+  <!-- HostChain -->
+  <rect x="180" y="338" width="700" height="36" rx="8" fill="#0d3320" stroke="#3fb950" stroke-width="1.5"/>
+  <text x="530" y="361" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="700">🏗️ HostChain — 共识层 · 全局状态 · 跨链消息通道</text>
+
+  <!-- AppChains row -->
+  <rect x="80" y="390" width="200" height="50" rx="8" fill="#122016" stroke="#3fb950" stroke-width="1"/>
+  <text x="180" y="412" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="700">Spot Appchain</text>
+  <text x="180" y="428" text-anchor="middle" fill="#8b949e" font-size="10">现货订单簿</text>
+
+  <rect x="310" y="390" width="200" height="50" rx="8" fill="#122016" stroke="#3fb950" stroke-width="1"/>
+  <text x="410" y="412" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="700">Perps Appchain</text>
+  <text x="410" y="428" text-anchor="middle" fill="#8b949e" font-size="10">合约订单簿</text>
+
+  <rect x="540" y="390" width="200" height="50" rx="8" fill="#122016" stroke="#3fb950" stroke-width="1"/>
+  <text x="640" y="412" text-anchor="middle" fill="#3fb950" font-size="11" font-weight="700">EVM System Chain</text>
+  <text x="640" y="428" text-anchor="middle" fill="#8b949e" font-size="10">统一账户 · dApp</text>
+
+  <rect x="770" y="390" width="200" height="50" rx="8" fill="#122016" stroke="#3fb950" stroke-width="1" stroke-dasharray="5,3"/>
+  <text x="870" y="412" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="700">Future Appchains</text>
+  <text x="870" y="428" text-anchor="middle" fill="#6e7681" font-size="10">RWA / 稳定币 / 借贷 …</text>
+
+  <!-- Bridging lines between appchains -->
+  <line x1="280" y1="415" x2="310" y2="415" stroke="#3fb950" stroke-width="1"/>
+  <line x1="510" y1="415" x2="540" y2="415" stroke="#3fb950" stroke-width="1"/>
+  <line x1="740" y1="415" x2="770" y2="415" stroke="#3fb950" stroke-width="1" stroke-dasharray="4,3"/>
+
+  <!-- ===== LAYER 4: Mirror Protocol ===== -->
+  <text x="530" y="478" text-anchor="middle" fill="#d2991d" font-size="12" font-weight="700" letter-spacing="3">🌉 Mirror Protocol 跨链桥 CROSS-CHAIN BRIDGE</text>
+
+  <rect x="200" y="494" width="660" height="56" rx="10" fill="#1a180a" stroke="#d2991d" stroke-width="1.5"/>
+  <text x="530" y="516" text-anchor="middle" fill="#d2991d" font-size="13" font-weight="700">🔐 MPC 多方计算 + TEE 可信执行环境 · 去信任化铸币/销毁</text>
+  <text x="530" y="536" text-anchor="middle" fill="#8b949e" font-size="11">Mirror BTC · Mirror SOL · Mirror USDC · Mirror XRP · Mirror ETH …</text>
+
+  <!-- ===== LAYER 5: External ===== -->
+  <text x="530" y="582" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">🌐 外部资产源 EXTERNAL ASSET SOURCES</text>
+
+  <rect x="40" y="596" width="140" height="36" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1"/>
+  <text x="110" y="619" text-anchor="middle" fill="#8b949e" font-size="12">Bitcoin Network</text>
+
+  <rect x="220" y="596" width="140" height="36" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1"/>
+  <text x="290" y="619" text-anchor="middle" fill="#8b949e" font-size="12">Solana</text>
+
+  <rect x="400" y="596" width="140" height="36" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1"/>
+  <text x="470" y="619" text-anchor="middle" fill="#8b949e" font-size="12">Ethereum / L2s</text>
+
+  <rect x="580" y="596" width="140" height="36" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1"/>
+  <text x="650" y="619" text-anchor="middle" fill="#8b949e" font-size="12">Base Chain</text>
+
+  <rect x="760" y="596" width="140" height="36" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1"/>
+  <text x="830" y="619" text-anchor="middle" fill="#8b949e" font-size="12">Ripple (XRP)</text>
+
+  <!-- ===== LIQUIDATION FLOW (right side) ===== -->
+  <text x="530" y="670" text-anchor="middle" fill="#f85149" font-size="12" font-weight="700" letter-spacing="3">⚠️ 清算流程 LIQUIDATION FLOW</text>
+
+  <!-- Flow boxes -->
+  <rect x="40" y="690" width="195" height="50" rx="8" fill="#1a1010" stroke="#f85149" stroke-width="1"/>
+  <text x="137" y="712" text-anchor="middle" fill="#f85149" font-size="12" font-weight="700">① 触发 Trigger</text>
+  <text x="137" y="730" text-anchor="middle" fill="#8b949e" font-size="10">权益 &lt; 维持保证金</text>
+
+  <line x1="235" y1="715" x2="275" y2="715" stroke="#f85149" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+
+  <rect x="280" y="690" width="195" height="50" rx="8" fill="#1a1010" stroke="#d2991d" stroke-width="1"/>
+  <text x="377" y="712" text-anchor="middle" fill="#d2991d" font-size="12" font-weight="700">② 挂市价单 Market</text>
+  <text x="377" y="730" text-anchor="middle" fill="#8b949e" font-size="10">订单簿自然撮合成交</text>
+
+  <line x1="475" y1="715" x2="515" y2="715" stroke="#d2991d" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+
+  <rect x="520" y="690" width="210" height="50" rx="8" fill="#1a1010" stroke="#f0883e" stroke-width="1"/>
+  <text x="625" y="712" text-anchor="middle" fill="#f0883e" font-size="12" font-weight="700">③ 后备清算 Backstop</text>
+  <text x="625" y="730" text-anchor="middle" fill="#8b949e" font-size="10">指定做市商折扣接盘</text>
+
+  <line x1="730" y1="715" x2="770" y2="715" stroke="#f0883e" stroke-width="1.5" marker-end="url(#arrowOrange)"/>
+
+  <rect x="775" y="690" width="250" height="50" rx="8" fill="#1a1010" stroke="#58a6ff" stroke-width="1"/>
+  <text x="900" y="712" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="700">④ ADL 自动减仓 (最后防线)</text>
+  <text x="900" y="730" text-anchor="middle" fill="#8b949e" font-size="10">盈利×杠杆排序 → 强制平仓</text>
+
+  <!-- ===== INCENTIVE / SoPoints bar ===== -->
+  <rect x="40" y="762" width="985" height="36" rx="8" fill="#161b22" stroke="#f0c040" stroke-width="1"/>
+  <text x="530" y="786" text-anchor="middle" fill="#f0c040" font-size="13" font-weight="700">🎯 SoPoints 积分系统   |   交易赚分   |   做市赚分   |   Stake $SOSO   |   赛季制 (Season 1)   |   空投预期</text>
+</svg>
+
+</div><!-- /diagram -->
+
+<script>
+// Scroll spy — highlight active nav link
+(function(){
+  const nav = document.querySelector('.nav');
+  const links = nav.querySelectorAll('a');
+  const sections = [...links].map(a => {
+    const id = a.getAttribute('href').slice(1);
+    return document.getElementById(id);
+  }).filter(Boolean);
+
+  function update(){
+    let current = '';
+    for(let i = sections.length-1; i >= 0; i--){
+      const rect = sections[i].getBoundingClientRect();
+      if(rect.top <= 160){ current = sections[i].id; break; }
+    }
+    links.forEach(a => {
+      const id = a.getAttribute('href').slice(1);
+      a.classList.toggle('active', id === current);
+    });
+  }
+
+  window.addEventListener('scroll', update, {passive:true});
+  update();
+
+  // Smooth scroll for nav links
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.getElementById(a.getAttribute('href').slice(1));
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

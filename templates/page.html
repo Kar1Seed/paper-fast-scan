@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="{{LANG_CODE}}" data-lang="{{LANG_CODE}}">
+<!--
+  Paper Fast Scan — Bilingual Whitepaper Template
+  ================================================
+  PLACEHOLDERS:
+    {{LANG_CODE}}     — Target language code (zh, ja, ko, en, etc.)
+    {{PROJECT}}       — Project name
+    {{SUBTITLE}}      — One-line description
+    {{NAV_TITLE}}     — Navigation heading text
+    {{NAV_ITEMS}}     — Navigation links (<a href="#sec1">Title</a>...)
+    {{CONTENT}}       — Main bilingual content (EN blocks + TL blocks)
+    {{GLOSSARY_TITLE}}— Glossary sidebar heading
+    {{GLOSSARY}}      — Glossary entries
+    {{FORMULAS_TITLE}}— Formula summary heading
+    {{FORMULAS}}      — Formula blocks
+    {{DIAGRAM_TITLE}} — Architecture diagram heading
+    {{SVG_DIAGRAM}}   — SVG markup (hand-crafted)
+    {{EXAMPLE_LABEL}} — Label for worked examples (e.g. "Example" / "示例")
+    {{TABLE_DATA}}    — Optional data tables (leverage tiers, fees, etc.)
+-->
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{PROJECT}} — {{SUBTITLE}}</title>
+<style>
+/* ============================================================
+   DESIGN SYSTEM (Dark Theme)
+   ============================================================ */
+:root {
+  --bg: #0d1117; --surface: #161b22; --border: #30363d;
+  --text: #c9d1d9; --text-dim: #8b949e;
+  --highlight: #f0c040; --highlight-bg: rgba(240,192,64,0.15);
+  --accent: #58a6ff; --accent-dim: rgba(88,166,255,0.12);
+  --red: #f85149; --green: #3fb950; --purple: #a371f7; --orange: #d2991d;
+}
+
+/* ============================================================
+   I18N — UI String Custom Properties
+   ============================================================
+   To add a new language, copy the :root[data-lang="zh"] block
+   and translate the --ui-* values. The AI fills these automatically.
+   ============================================================ */
+:root[data-lang="zh"] {
+  --ui-source-label: "EN";
+  --ui-target-label: "中文";
+}
+:root[data-lang="ja"] {
+  --ui-source-label: "EN";
+  --ui-target-label: "日本語";
+}
+:root[data-lang="ko"] {
+  --ui-source-label: "EN";
+  --ui-target-label: "한국어";
+}
+:root[data-lang="en"] {
+  --ui-source-label: "EN";
+  --ui-target-label: "";
+}
+/* Fallback / unknown language */
+:root {
+  --ui-source-label: "EN";
+  --ui-target-label: "TR";
+}
+
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", sans-serif;
+  background: var(--bg); color: var(--text); line-height: 1.75;
+}
+.header {
+  background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+  border-bottom: 1px solid var(--border); padding: 32px 48px;
+  position: sticky; top:0; z-index:100;
+}
+.header h1 { font-size: 24px; color: #fff; }
+.header p { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
+.container { display:flex; max-width: 1560px; margin:0 auto; }
+
+/* ---- NAV ---- */
+.nav {
+  flex:0 0 220px; padding: 24px 16px; position: sticky; top: 96px;
+  align-self: flex-start; max-height: calc(100vh - 120px); overflow-y: auto;
+  border-right: 1px solid var(--border); background: var(--bg);
+}
+.nav-title {
+  font-size: 11px; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 1.5px; margin-bottom: 14px; font-weight: 700;
+}
+.nav a {
+  display: block; color: var(--text-dim); text-decoration: none;
+  font-size: 12px; padding: 5px 10px; margin: 2px 0; border-radius: 4px;
+  transition: all 0.15s; border-left: 2px solid transparent;
+}
+.nav a:hover { color: var(--text); background: var(--surface); border-left-color: var(--border); }
+.nav a.active { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); font-weight: 600; }
+.nav .sub { padding-left: 22px; font-size: 11px; }
+.nav .sep { height: 12px; }
+
+/* ---- MAIN ---- */
+.main { flex:1 1 65%; min-width:0; padding: 32px 40px 80px; border-right: 1px solid var(--border); }
+.main h2 {
+  font-size: 20px; color: var(--accent); margin: 48px 0 16px;
+  padding-bottom: 8px; border-bottom: 1px solid var(--border);
+}
+.main h2:first-child { margin-top: 0; }
+.main h3 { font-size: 16px; color: var(--purple); margin: 28px 0 10px; }
+
+/* Bilingual blocks */
+.en-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 8px; padding: 18px 22px; margin: 16px 0 8px; position: relative;
+}
+.en-block::before {
+  content: var(--ui-source-label);
+  position: absolute; top: -10px; left: 16px;
+  background: #1f6feb; color:#fff;
+  font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 4px;
+}
+.tl-block {
+  background: transparent; padding: 14px 22px; margin: 0 0 24px;
+  border-left: 3px solid var(--green); color: #bdc6d0;
+}
+.tl-block::before {
+  content: var(--ui-target-label);
+  display: block; font-size: 11px; font-weight: 700;
+  color: var(--green); margin-bottom: 6px;
+}
+.hl { color: var(--highlight); font-weight: 600; }
+.formula-box {
+  background: var(--highlight-bg); border: 1px solid rgba(240,192,64,0.3);
+  border-radius: 6px; padding: 14px 18px; margin: 12px 0;
+  font-family: "JetBrains Mono","Consolas",monospace;
+  font-size: 14px; color: var(--highlight); overflow-x: auto;
+}
+.example-box {
+  background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.25);
+  border-radius: 6px; padding: 14px 18px; margin: 10px 0; font-size: 14px;
+}
+.example-box::before {
+  content: "{{EXAMPLE_LABEL}}";
+  color: var(--green); font-weight: 600; display:block; margin-bottom:6px;
+}
+
+/* ---- SIDEBAR ---- */
+.sidebar {
+  flex:0 0 380px; padding: 24px 20px; position: sticky; top: 96px;
+  align-self: flex-start; max-height: calc(100vh - 120px); overflow-y: auto;
+}
+.sidebar h3 {
+  font-size: 14px; color: var(--text-dim); text-transform: uppercase;
+  letter-spacing: 1px; margin: 24px 0 10px;
+  border-bottom: 1px solid var(--border); padding-bottom: 6px;
+}
+.sidebar h3:first-child { margin-top: 0; }
+.glossary-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 6px; padding: 10px 14px; margin: 8px 0; font-size: 13px;
+}
+.glossary-item .term { color: var(--highlight); font-weight: 700; font-size: 14px; }
+.glossary-item .def { color: var(--text-dim); margin-top: 4px; }
+.mini-formula {
+  background: var(--highlight-bg); border-radius: 4px; padding: 6px 10px; margin: 6px 0;
+  font-family: "JetBrains Mono",monospace; font-size: 12px;
+  color: var(--highlight); overflow-x: auto;
+}
+
+/* ---- DIAGRAM ---- */
+.diagram-section { max-width: 1100px; margin: 60px auto 40px; padding: 32px 20px; }
+.diagram-section h2 { text-align:center; color: var(--accent); margin-bottom: 32px; font-size: 22px; }
+
+/* ---- SCROLLBAR ---- */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius:3px; }
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 960px) {
+  .container { flex-direction: column; }
+  .nav, .sidebar { flex: none; position: static; max-height: none; padding: 20px 40px; }
+  .main { border-right: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🔬 {{PROJECT}} — {{SUBTITLE}}</h1>
+</div>
+
+<div class="container">
+
+  <nav class="nav">
+    <div class="nav-title">{{NAV_TITLE}}</div>
+    {{NAV_ITEMS}}
+  </nav>
+
+  <div class="main">
+    {{CONTENT}}
+  </div>
+
+  <div class="sidebar">
+    <h3>{{GLOSSARY_TITLE}}</h3>
+    {{GLOSSARY}}
+
+    <h3>{{FORMULAS_TITLE}}</h3>
+    {{FORMULAS}}
+
+    {{TABLE_DATA}}
+  </div>
+
+</div>
+
+<div class="diagram-section" id="diagram">
+  <h2>{{DIAGRAM_TITLE}}</h2>
+  <svg class="diagram" viewBox="0 0 1060 820" width="100%" style="max-width:1060px;">
+    {{SVG_DIAGRAM}}
+  </svg>
+</div>
+
+<script>
+// ============================================================
+// Scroll Spy + Smooth Scroll Navigation
+// ============================================================
+(function(){
+  const nav = document.querySelector('.nav');
+  if(!nav) return;
+  const links = nav.querySelectorAll('a[href^="#"]');
+  const sections = [...links].map(a => {
+    return document.getElementById(a.getAttribute('href').slice(1));
+  }).filter(Boolean);
+
+  function update(){
+    let current = '';
+    for(let i = sections.length-1; i >= 0; i--){
+      const rect = sections[i].getBoundingClientRect();
+      if(rect.top <= 160){ current = sections[i].id; break; }
+    }
+    links.forEach(a => {
+      const id = a.getAttribute('href').slice(1);
+      a.classList.toggle('active', id === current);
+    });
+  }
+
+  window.addEventListener('scroll', update, {passive:true});
+  update();
+
+  // Smooth scroll
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const el = document.getElementById(a.getAttribute('href').slice(1));
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
