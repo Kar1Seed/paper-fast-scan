@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper Fast Scan — 架构全景 & 未来路线图</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#c9d1d9;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif}
+.header{background:linear-gradient(135deg,#1a1f2e,#0d1117);border-bottom:1px solid #30363d;padding:28px 48px;text-align:center}
+.header h1{font-size:24px;color:#fff}.header p{color:#8b949e;font-size:14px;margin-top:6px}
+.container{max-width:1200px;margin:40px auto;padding:0 20px}
+h2{color:#58a6ff;font-size:20px;margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid #30363d}
+h2:first-child{margin-top:0}
+
+/* Legend */
+.legend{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:24px;font-size:13px}
+.legend-item{display:flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:3px}
+.dot-done{background:#3fb950}.dot-now{background:#58a6ff}.dot-next{background:#d2991d}.dot-future{background:#8b949e;border:1px dashed #6e7681}
+.cap{color:#8b949e;font-size:12px;margin-top:8px}
+
+/* Feature tables */
+table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0}
+th{background:#161b22;color:#f0c040;padding:10px 14px;border:1px solid #30363d;text-align:left}
+td{padding:10px 14px;border:1px solid #30363d;vertical-align:top}
+tr:nth-child(even){background:rgba(22,27,34,0.5)}
+
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:4px}
+.tag-done{background:rgba(63,185,80,0.15);color:#3fb950}
+.tag-now{background:rgba(88,166,255,0.15);color:#58a6ff}
+.tag-next{background:rgba(210,153,29,0.15);color:#d2991d}
+.tag-future{background:rgba(139,148,158,0.15);color:#8b949e}
+
+.priority{font-size:12px}.p0{color:#f85149;font-weight:700}.p1{color:#d2991d;font-weight:600}.p2{color:#8b949e}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>🏗️ Paper Fast Scan — 架构全景 & 未来路线图</h1>
+<p>当前 v2.0 · 未来版本规划 · 可扩展模块化设计</p>
+</div>
+
+<div class="container">
+
+<div class="legend">
+<span class="legend-item"><span class="dot dot-done"></span> 已完成</span>
+<span class="legend-item"><span class="dot dot-now"></span> 进行中</span>
+<span class="legend-item"><span class="dot dot-next"></span> v2.1~v2.5</span>
+<span class="legend-item"><span class="dot dot-future"></span> v3.0+</span>
+</div>
+
+<!-- ARCHITECTURE SVG -->
+<h2>一、系统架构全景图</h2>
+<div class="cap">五层架构：输入 → 解析 → 理解 → 输出 → 数据层。虚线框为未来扩展。</div>
+
+<svg viewBox="0 0 1200 900" width="100%" style="max-width:1200px;background:#0d1117;border:1px solid #30363d;border-radius:12px;margin-top:12px;">
+<defs>
+<linearGradient id="gInput" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#1f6feb"/></linearGradient>
+<linearGradient id="gParse" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a371f7"/><stop offset="100%" stop-color="#8250df"/></linearGradient>
+<linearGradient id="gLLM" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#2ea043"/></linearGradient>
+<linearGradient id="gOut" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c040"/><stop offset="100%" stop-color="#d4a017"/></linearGradient>
+<linearGradient id="gData" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0883e"/><stop offset="100%" stop-color="#d2691e"/></linearGradient>
+<linearGradient id="gFuture" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6e7681"/><stop offset="100%" stop-color="#484f58"/></linearGradient>
+</defs>
+
+<!-- Layer labels -->
+<text x="20" y="40" fill="#8b949e" font-size="12" font-weight="700">📥 L1: INPUT</text>
+<text x="20" y="190" fill="#8b949e" font-size="12" font-weight="700">🔧 L2: PARSE</text>
+<text x="20" y="370" fill="#8b949e" font-size="12" font-weight="700">🧠 L3: COMPREHEND</text>
+<text x="20" y="570" fill="#8b949e" font-size="12" font-weight="700">📤 L4: OUTPUT</text>
+<text x="20" y="760" fill="#8b949e" font-size="12" font-weight="700">💾 L5: DATA</text>
+
+<!-- ===== L1: INPUT ===== -->
+<rect x="100" y="18" width="180" height="50" rx="8" fill="url(#gInput)" opacity="0.9"/>
+<text x="190" y="40" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">🌐 GitBook / Web Docs</text>
+<text x="190" y="58" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">URL → 自动发现页面树</text>
+
+<rect x="310" y="18" width="160" height="50" rx="8" fill="url(#gInput)" opacity="0.9"/>
+<text x="390" y="40" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">📄 arXiv / Local PDF</text>
+<text x="390" y="58" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">pymupdf 文本+图表</text>
+
+<rect x="500" y="18" width="160" height="50" rx="8" fill="url(#gInput)" opacity="0.9"/>
+<text x="580" y="40" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">📝 Markdown / Plain</text>
+<text x="580" y="58" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">直接解析 .md 文件</text>
+
+<!-- Future inputs -->
+<rect x="690" y="18" width="160" height="50" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="770" y="40" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 Notion / Obsidian</text>
+<text x="770" y="58" text-anchor="middle" fill="#6e7681" font-size="10">v2.3 API 接入</text>
+
+<rect x="880" y="18" width="180" height="50" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="970" y="40" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🎥 Video / Podcast</text>
+<text x="970" y="58" text-anchor="middle" fill="#6e7681" font-size="10">v3.0 语音转文字</text>
+
+<!-- ===== L2: PARSE ===== -->
+<rect x="100" y="168" width="310" height="60" rx="8" fill="url(#gParse)" opacity="0.85"/>
+<text x="255" y="192" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">🔍 多源解析引擎 Multi-Source Parser</text>
+<text x="255" y="214" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">HTML 清洗 · PDF 提取 · 图表分离 · LaTeX 识别 · 元数据采集</text>
+
+<rect x="440" y="168" width="200" height="60" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="540" y="192" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 格式注册中心</text>
+<text x="540" y="214" text-anchor="middle" fill="#6e7681" font-size="11">v2.3 插件式格式扩展</text>
+
+<rect x="670" y="168" width="200" height="60" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="770" y="192" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 多语言 OCR</text>
+<text x="770" y="214" text-anchor="middle" fill="#6e7681" font-size="11">v3.0 扫描件/图片转文字</text>
+
+<rect x="900" y="168" width="180" height="60" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="990" y="192" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 结构化提取</text>
+<text x="990" y="214" text-anchor="middle" fill="#6e7681" font-size="11">v2.5 表格·公式·引文</text>
+
+<!-- ===== L3: COMPREHEND ===== -->
+<rect x="100" y="348" width="390" height="90" rx="8" fill="url(#gLLM)" opacity="0.9"/>
+<text x="295" y="375" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">🧠 LLM 理解引擎 (当前: 单 Agent 模式)</text>
+<text x="295" y="398" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">结构化摘要 · 双语翻译 · 术语提取 · 公式还原 · 架构图生成</text>
+<text x="295" y="418" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10">DeepSeek / GPT / Claude — 用户当前模型</text>
+
+<rect x="520" y="348" width="350" height="90" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="695" y="375" text-anchor="middle" fill="#8b949e" font-size="13" font-weight="700">🔮 多 Agent 协作编排 (v2.5)</text>
+<text x="695" y="398" text-anchor="middle" fill="#6e7681" font-size="11">📄 主 Agent: 任务分解 & 调度</text>
+<text x="695" y="415" text-anchor="middle" fill="#6e7681" font-size="11">🔍 检索 Agent: 术语/作者/引文 DB 查询</text>
+<text x="695" y="432" text-anchor="middle" fill="#6e7681" font-size="11">🖼️ 图表 Agent: 图片 OCR · SVG 矢量化</text>
+
+<rect x="900" y="348" width="180" height="90" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="990" y="375" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 质量审查 Agent</text>
+<text x="990" y="398" text-anchor="middle" fill="#6e7681" font-size="11">v2.5 翻译校对</text>
+<text x="990" y="415" text-anchor="middle" fill="#6e7681" font-size="11">公式验证</text>
+<text x="990" y="432" text-anchor="middle" fill="#6e7681" font-size="11">术语一致性</text>
+
+<!-- ===== L4: OUTPUT ===== -->
+<rect x="100" y="548" width="280" height="70" rx="8" fill="url(#gOut)" opacity="0.85"/>
+<text x="240" y="575" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">📄 静态 HTML 页面 (v1/v2 核心输出)</text>
+<text x="240" y="598" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">双模板: page.html + paper.html</text>
+<text x="240" y="613" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10">三栏布局 · 术语高亮 · SVG 图 · 导航</text>
+
+<rect x="410" y="548" width="220" height="70" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="520" y="575" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 交互式页面 (v2.2)</text>
+<text x="520" y="598" text-anchor="middle" fill="#6e7681" font-size="11">Glossary hover 双链</text>
+<text x="520" y="613" text-anchor="middle" fill="#6e7681" font-size="11">折叠章节 · 暗/亮切换</text>
+
+<rect x="660" y="548" width="200" height="70" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="760" y="575" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 知识图谱 (v3.0)</text>
+<text x="760" y="598" text-anchor="middle" fill="#6e7681" font-size="11">论文间引用关系图</text>
+<text x="760" y="613" text-anchor="middle" fill="#6e7681" font-size="11">作者合作网络</text>
+
+<rect x="890" y="548" width="190" height="70" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="985" y="575" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 导出格式 (v2.5)</text>
+<text x="985" y="598" text-anchor="middle" fill="#6e7681" font-size="11">PDF · EPUB · JSON</text>
+<text x="985" y="613" text-anchor="middle" fill="#6e7681" font-size="11">Obsidian Markdown</text>
+
+<!-- ===== L5: DATA ===== -->
+<rect x="100" y="738" width="280" height="70" rx="8" fill="url(#gData)" opacity="0.85"/>
+<text x="240" y="763" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">🗄️ 作者数据库 (v2.3)</text>
+<text x="240" y="786" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">姓名 · 机构 · 论文列表 · 合作图谱</text>
+<text x="240" y="801" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10">arXiv API 自动补全</text>
+
+<rect x="410" y="738" width="250" height="70" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="535" y="763" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 Glossary 知识库 (v2.2)</text>
+<text x="535" y="786" text-anchor="middle" fill="#6e7681" font-size="11">术语标准化 · 释义缓存 · 交叉引用</text>
+<text x="535" y="801" text-anchor="middle" fill="#6e7681" font-size="11">hover 悬浮卡片 · 双向链接</text>
+
+<rect x="690" y="738" width="220" height="70" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="800" y="763" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 论文关联图 (v3.0)</text>
+<text x="800" y="786" text-anchor="middle" fill="#6e7681" font-size="11">引用链 · 主题聚类 · 时间线</text>
+<text x="800" y="801" text-anchor="middle" fill="#6e7681" font-size="11">d3.js / vis.js 可视化</text>
+
+<rect x="940" y="738" width="140" height="70" rx="8" fill="#161b22" stroke="#6e7681" stroke-width="1.5" stroke-dasharray="6,3"/>
+<text x="1010" y="763" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">🔮 社区模板</text>
+<text x="1010" y="786" text-anchor="middle" fill="#6e7681" font-size="11">v3.0 用户贡献</text>
+<text x="1010" y="801" text-anchor="middle" fill="#6e7681" font-size="11">模板市场</text>
+
+<!-- Arrow flows -->
+<line x1="190" y1="68" x2="255" y2="168" stroke="#8b949e" stroke-width="0.8" opacity="0.5"/>
+<line x1="390" y1="68" x2="300" y2="168" stroke="#8b949e" stroke-width="0.8" opacity="0.5"/>
+<line x1="580" y1="68" x2="450" y2="168" stroke="#8b949e" stroke-width="0.8" opacity="0.5"/>
+<line x1="295" y1="228" x2="295" y2="348" stroke="#a371f7" stroke-width="1.5"/>
+<line x1="295" y1="438" x2="240" y2="548" stroke="#3fb950" stroke-width="1.5"/>
+<line x1="695" y1="438" x2="520" y2="548" stroke="#6e7681" stroke-width="1" stroke-dasharray="4,3"/>
+<line x1="240" y1="618" x2="240" y2="738" stroke="#8b949e" stroke-width="1"/>
+<line x1="535" y1="618" x2="535" y2="738" stroke="#6e7681" stroke-width="1" stroke-dasharray="4,3"/>
+</svg>
+
+<!-- FEATURE ROADMAP TABLE -->
+<h2>二、功能路线图 Roadmap</h2>
+
+<table>
+<tr><th>版本</th><th>功能</th><th>类别</th><th>优</th><th>说明</th></tr>
+
+<tr>
+<td rowspan="2">v2.0 ✅</td>
+<td>PDF 论文解析 (pymupdf)</td><td>📄 解析</td><td class="p0">P0</td>
+<td>文本提取 · 图表分离 · LaTeX 识别 · 论文元数据</td>
+</tr>
+<tr>
+<td>双模板 (page.html + paper.html)</td><td>📤 输出</td><td class="p0">P0</td>
+<td>Web 白皮书用 page.html，学术论文用 paper.html</td>
+</tr>
+
+<tr style="background:rgba(88,166,255,0.06)">
+<td rowspan="4">v2.1 🚧</td>
+<td>Glossary 交叉引用 & hover 双链</td><td>📤 输出</td><td class="p0">P0</td>
+<td>正文术语 hover 浮窗显示释义；侧栏 Glossary 点击跳转正文</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>多 Agent 协作架构设计</td><td>🧠 理解</td><td class="p1">P1</td>
+<td>主 Agent 调度 + 检索/图表/校对子 Agent 并行</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>安装脚本 (install.py)</td><td>🔧 工具</td><td class="p0">P0</td>
+<td>一键安装依赖，新人友好</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>示例库扩充 (≥5 篇)</td><td>📚 文档</td><td class="p1">P1</td>
+<td>覆盖 DEX / L1 / DeFi / AI / 零知识证明 多领域</td>
+</tr>
+
+<tr>
+<td rowspan="3">v2.2</td>
+<td>Glossary 知识库持久化</td><td>💾 数据</td><td class="p0">P0</td>
+<td>SQLite 存储术语 · 释义缓存 · 跨论文复用 · 避免重复解释</td>
+</tr>
+<tr>
+<td>交互式 HTML: 折叠章节</td><td>📤 输出</td><td class="p1">P1</td>
+<td>长页面支持 expand/collapse，默认展开核心章节</td>
+</tr>
+<tr>
+<td>暗/亮色主题切换</td><td>📤 输出</td><td class="p2">P2</td>
+<td>尊重用户阅读偏好 · 记忆选择</td>
+</tr>
+
+<tr style="background:rgba(88,166,255,0.06)">
+<td rowspan="4">v2.3</td>
+<td>作者数据库</td><td>💾 数据</td><td class="p1">P1</td>
+<td>arXiv API 自动抓取作者信息 · 机构 · 论文列表</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>Notion / Obsidian 文档源</td><td>📥 输入</td><td class="p2">P2</td>
+<td>通过 API 接入 Notion 页面和 Obsidian vault</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>格式注册中心 (插件式)</td><td>🔧 解析</td><td class="p1">P1</td>
+<td>新文档格式通过注册即可支持，不修改核心代码</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>作者合作网络图</td><td>📤 输出</td><td class="p2">P2</td>
+<td>SVG 展示同一作者跨论文关系 · 机构聚类</td>
+</tr>
+
+<tr>
+<td rowspan="3">v2.5</td>
+<td>多 Agent 编排正式上线</td><td>🧠 理解</td><td class="p1">P1</td>
+<td>Hermes delegate_task 并行 3 个 Agent: 翻译/图表/校对</td>
+</tr>
+<tr>
+<td>导出格式扩展 (EPUB/JSON)</td><td>📤 输出</td><td class="p2">P2</td>
+<td>PDF 打印版 · EPUB 电子书 · JSON 结构化数据</td>
+</tr>
+<tr>
+<td>结构化提取 (表格·公式·引文)</td><td>🔧 解析</td><td class="p1">P1</td>
+<td>PDF 表格→HTML table · 引文→可点击链接</td>
+</tr>
+
+<tr style="background:rgba(88,166,255,0.06)">
+<td rowspan="4">v3.0</td>
+<td>论文关联知识图谱</td><td>💾 数据</td><td class="p1">P1</td>
+<td>跨论文引用链 · 主题聚类 · 时间线可视化</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>视频/播客转文字</td><td>📥 输入</td><td class="p2">P2</td>
+<td>Whisper 语音转文字 → 结构化摘要</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>社区模板市场</td><td>📤 输出</td><td class="p2">P2</td>
+<td>用户贡献自定义模板 · 投票排名</td>
+</tr>
+<tr style="background:rgba(88,166,255,0.06)">
+<td>Obsidian 双向链接导出</td><td>📤 输出</td><td class="p2">P2</td>
+<td>生成的术语/论文/作者自动建立 [[wiki-link]]</td>
+</tr>
+</table>
+
+<!-- DATA FLOW -->
+<h2>三、数据流 & 模块交互</h2>
+
+<svg viewBox="0 0 1200 400" width="100%" style="max-width:1200px;background:#0d1117;border:1px solid #30363d;border-radius:12px;margin-top:12px;">
+<defs>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/></marker>
+<marker id="arrB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#58a6ff"/></marker>
+</defs>
+
+<!-- Main Flow -->
+<rect x="30" y="60" width="180" height="60" rx="10" fill="url(#gInput)" opacity="0.9"/>
+<text x="120" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">📥 文档输入</text>
+<text x="120" y="107" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">URL / PDF / MD</text>
+
+<line x1="210" y1="90" x2="270" y2="90" stroke="#58a6ff" stroke-width="2" marker-end="url(#arrB)"/>
+
+<rect x="275" y="60" width="180" height="60" rx="10" fill="url(#gParse)" opacity="0.85"/>
+<text x="365" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">🔧 解析 & 清洗</text>
+<text x="365" y="107" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">HTML 去标签 · PDF 提取</text>
+
+<line x1="455" y1="90" x2="515" y2="90" stroke="#a371f7" stroke-width="2" marker-end="url(#arr)"/>
+
+<rect x="520" y="50" width="200" height="80" rx="10" fill="url(#gLLM)" opacity="0.9"/>
+<text x="620" y="75" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">🧠 LLM 理解</text>
+<text x="620" y="95" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">翻译 · 摘要 · 术语 · 公式</text>
+<text x="620" y="115" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="10">DeepSeek / GPT / Claude</text>
+
+<line x1="720" y1="90" x2="780" y2="90" stroke="#3fb950" stroke-width="2" marker-end="url(#arr)"/>
+
+<rect x="785" y="60" width="180" height="60" rx="10" fill="url(#gOut)" opacity="0.85"/>
+<text x="875" y="85" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">📤 HTML 生成</text>
+<text x="875" y="107" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11">模板渲染 · SVG 图</text>
+
+<line x1="965" y1="90" x2="1015" y2="90" stroke="#f0c040" stroke-width="2" marker-end="url(#arr)"/>
+
+<rect x="1020" y="60" width="150" height="60" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<text x="1095" y="85" text-anchor="middle" fill="#3fb950" font-size="13" font-weight="700">✅ 输出页面</text>
+<text x="1095" y="107" text-anchor="middle" fill="#8b949e" font-size="11">浏览器打开</text>
+
+<!-- DATA LAYER (bottom) -->
+<rect x="30" y="200" width="1140" height="30" rx="6" fill="#1a1010" stroke="#30363d" stroke-width="1"/>
+<text x="600" y="220" text-anchor="middle" fill="#8b949e" font-size="11">💾 数据层: Glossary DB · 作者 DB · 论文元数据 · 模板缓存</text>
+
+<!-- Sub-modules (future) -->
+<rect x="30" y="260" width="220" height="60" rx="8" fill="#161b22" stroke="#a371f7" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="140" y="285" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700">🔍 检索 Agent</text>
+<text x="140" y="305" text-anchor="middle" fill="#8b949e" font-size="10">Glossary DB 查询</text>
+
+<rect x="280" y="260" width="220" height="60" rx="8" fill="#161b22" stroke="#f0c040" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="390" y="285" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🖼️ 图表 Agent</text>
+<text x="390" y="305" text-anchor="middle" fill="#8b949e" font-size="10">OCR · SVG 矢量化</text>
+
+<rect x="530" y="260" width="220" height="60" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="640" y="285" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="700">✅ 校对 Agent</text>
+<text x="640" y="305" text-anchor="middle" fill="#8b949e" font-size="10">翻译质量 · 术语一致</text>
+
+<rect x="780" y="260" width="220" height="60" rx="8" fill="#161b22" stroke="#d2991d" stroke-width="1.5" stroke-dasharray="5,3"/>
+<text x="890" y="285" text-anchor="middle" fill="#d2991d" font-size="12" font-weight="700">🔗 关联 Agent</text>
+<text x="890" y="305" text-anchor="middle" fill="#8b949e" font-size="10">作者 · 引用 · 主题</text>
+
+<!-- Future flow lines -->
+<line x1="620" y1="170" x2="140" y2="260" stroke="#a371f7" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="620" y1="170" x2="390" y2="260" stroke="#f0c040" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="620" y1="170" x2="640" y2="260" stroke="#3fb950" stroke-width="0.8" stroke-dasharray="4,3"/>
+<line x1="620" y1="170" x2="890" y2="260" stroke="#d2991d" stroke-width="0.8" stroke-dasharray="4,3"/>
+</svg>
+
+<p class="cap">实线 = 当前 v2.0 已实现 | 虚线 = 未来版本计划</p>
+
+</div>
+</body>
+</html>
