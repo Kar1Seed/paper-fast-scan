@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoSoValue 白皮书 — 中英对照解读</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#c9d1d9;--text-dim:#8b949e;--highlight:#f0c040;--highlight-bg:rgba(240,192,64,0.15);--accent:#58a6ff;--accent-dim:rgba(88,166,255,0.12);--red:#f85149;--green:#3fb950;--purple:#a371f7;--orange:#d2991d}
+:root[data-lang="zh"]{--ui-source-label:"EN";--ui-target-label:"中文"}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+.header{background:linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%);border-bottom:1px solid var(--border);padding:32px 48px;position:sticky;top:0;z-index:100}
+.header h1{font-size:24px;color:#fff}.header p{color:var(--text-dim);font-size:14px;margin-top:6px}
+.container{display:flex;max-width:1560px;margin:0 auto}
+.nav{flex:0 0 220px;padding:24px 16px;position:sticky;top:96px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto;border-right:1px solid var(--border);background:var(--bg)}
+.nav-title{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-weight:700}
+.nav a{display:block;color:var(--text-dim);text-decoration:none;font-size:12px;padding:5px 10px;margin:2px 0;border-radius:4px;transition:all .15s;border-left:2px solid transparent}
+.nav a:hover{color:var(--text);background:var(--surface);border-left-color:var(--border)}
+.nav a.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);font-weight:600}
+.nav .sub{padding-left:22px;font-size:11px}.nav .sep{height:12px}
+.main{flex:1 1 65%;min-width:0;padding:32px 40px 80px;border-right:1px solid var(--border)}
+.main h2{font-size:20px;color:var(--accent);margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.main h2:first-child{margin-top:0}
+.main h3{font-size:16px;color:var(--purple);margin:28px 0 10px}
+.en-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 22px;margin:16px 0 8px;position:relative}
+.en-block::before{content:var(--ui-source-label);position:absolute;top:-10px;left:16px;background:#1f6feb;color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:4px}
+.cn-block{background:transparent;padding:14px 22px;margin:0 0 24px;border-left:3px solid var(--green);color:#bdc6d0}
+.cn-block::before{content:var(--ui-target-label);display:block;font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px}
+.hl{color:var(--highlight);font-weight:600}
+.formula-box{background:var(--highlight-bg);border:1px solid rgba(240,192,64,0.3);border-radius:6px;padding:14px 18px;margin:12px 0;font-family:"JetBrains Mono","Consolas",monospace;font-size:14px;color:var(--highlight);overflow-x:auto}
+.example-box{background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.25);border-radius:6px;padding:14px 18px;margin:10px 0;font-size:14px}
+.example-box::before{content:"📝 示例：";color:var(--green);font-weight:600;display:block;margin-bottom:6px}
+.sidebar{flex:0 0 380px;padding:24px 20px;position:sticky;top:96px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h3{font-size:14px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:24px 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.sidebar h3:first-child{margin-top:0}
+.glossary-item{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-size:13px}
+.glossary-item .term{color:var(--highlight);font-weight:700;font-size:14px}
+.glossary-item .def{color:var(--text-dim);margin-top:4px}
+.mini-formula{background:var(--highlight-bg);border-radius:4px;padding:6px 10px;margin:6px 0;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--highlight);overflow-x:auto}
+.diagram-section{max-width:1100px;margin:60px auto 40px;padding:32px 20px}
+.diagram-section h2{text-align:center;color:var(--accent);margin-bottom:32px;font-size:22px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:960px){.container{flex-direction:column}.nav,.sidebar{flex:none;position:static;max-height:none;padding:20px 40px}.main{border-right:none}}
+</style>
+</head>
+<body>
+<div class="header"><h1>🔬 SoSoValue — AI 驱动的加密投资与研究平台</h1><p>白皮书中英对照解读 · 四大支柱：Terminal · SSI 指数协议 · SoDEX · ValueChain</p></div>
+<div class="container">
+<nav class="nav">
+<div class="nav-title">📑 目录 Contents</div>
+<a href="#sec1">一、SoSoValue 是什么</a>
+<a href="#sec2">二、市场痛点</a>
+<a href="#sec3">三、解决方案</a>
+<a href="#sec3-1" class="sub">数据层</a>
+<a href="#sec3-2" class="sub">AI 层</a>
+<a href="#sec3-3" class="sub">协议层 (SSI)</a>
+<a href="#sec3-4" class="sub">基础设施层</a>
+<div class="sep"></div>
+<a href="#sec4">四、市场机遇</a>
+<a href="#sec5">五、SSI 指数协议</a>
+<a href="#sec5-1" class="sub">协议概览</a>
+<a href="#sec5-2" class="sub">四大指数产品</a>
+<a href="#sec5-3" class="sub">六方参与者</a>
+<a href="#sec5-4" class="sub">编制方法论</a>
+<div class="sep"></div>
+<a href="#sec6">六、经济学与代币</a>
+<a href="#sec6-1" class="sub">SOSO 代币</a>
+<a href="#sec6-2" class="sub">代币分配</a>
+<a href="#sec6-3" class="sub">跨链架构</a>
+<div class="sep"></div>
+<a href="#diagram">🏗️ 架构全景图</a>
+</nav>
+
+<div class="main">
+
+<h2 id="sec1">一、什么是 SoSoValue</h2>
+<div class="en-block">
+SoSoValue is an <span class="hl">AI-powered crypto investment and research platform</span> that aims to enable crypto investment to the global masses. The ecosystem comprises <span class="hl">four major pillars</span>: <span class="hl">SoSoValue Terminal</span> — a comprehensive crypto market research hub that synthesizes vast streams of data into actionable insights; <span class="hl">SoSoValue Indexes (SSI) Protocol</span> — an on-chain spot index protocol on EVM for transparent passive portfolios; <span class="hl">SoDEX</span> — a high-performance decentralized order book exchange; and <span class="hl">ValueChain</span> — a dedicated Layer-1 blockchain built for SoDEX and the wider ecosystem. By integrating data, AI, index protocols, and next-gen trading infrastructure, SoSoValue provides a <span class="hl">complete investment stack</span> from information discovery to portfolio construction and professional trading.
+</div>
+<div class="cn-block">
+SoSoValue 是一个<span class="hl">AI 驱动的加密投资研究平台</span>，致力于让全球大众都能参与加密投资。生态由<span class="hl">四大支柱</span>组成：<span class="hl">SoSoValue Terminal</span>——综合加密市场研究枢纽，将海量数据提炼为可执行的洞察；<span class="hl">SSI 指数协议</span>——基于 EVM 的链上现货指数协议，实现透明的被动投资组合；<span class="hl">SoDEX</span>——高性能去中心化订单簿交易所；<span class="hl">ValueChain</span>——专为 SoDEX 及更广泛生态构建的 Layer-1 区块链。通过整合数据、AI、指数协议和下一代交易基础设施，SoSoValue 提供从信息发现到组合构建再到专业交易的<span class="hl">完整投资栈</span>。
+</div>
+
+<h2 id="sec2">二、市场三大痛点</h2>
+<div class="en-block">
+Three core issues face today's crypto investors: <b>1. <span class="hl">Information Gap</span></b> — information is fragmented across different circles with no effective integration, making it difficult to form well-informed decisions. <b>2. <span class="hl">Absence of Simple Passive Investing</span></b> — unlike traditional finance where index funds provide simple market exposure, crypto lacks an easy and trustworthy way to gain broad market growth. <b>3. <span class="hl">Inefficient On-Chain Infrastructure</span></b> — AMM-based DEXs suffer from <span class="hl">slippage</span> and <span class="hl">capital inefficiency</span>; liquidity is shallow and fragmented; cross-chain operations are cumbersome. In crypto, a rational investment decision requires at least 10 different tools. The most fundamental elements — <span class="hl">information, investment products, and trading infrastructure</span> — should be clean, transparent, and accessible.
+</div>
+<div class="cn-block">
+当今加密投资者面临三大核心问题：<b>1. <span class="hl">信息鸿沟</span></b>——信息在不同圈子中碎片化分布，缺乏有效整合，难以形成全面判断。<b>2. <span class="hl">缺乏简单可靠的被动投资</span></b>——传统金融有指数基金提供简单市场敞口，加密市场却缺少类似工具。<b>3. <span class="hl">链上基础设施低效</span></b>——基于 AMM 的 DEX 存在<span class="hl">滑点</span>和<span class="hl">资金效率</span>问题；流动性浅且碎片化；跨链操作繁琐。在加密世界做一次理性投资决策，至少需要 10 种不同工具。最基础的三要素——<span class="hl">信息、投资产品、交易基础设施</span>——本应像水和空气一样清洁透明。
+</div>
+
+<h2 id="sec3">三、四大解决方案</h2>
+
+<h3 id="sec3-1">3.1 Data — 数据让洞察成为可能</h3>
+<div class="en-block">
+SoSoValue reclassified and reorganized data across the entire network, establishing <span class="hl">seven key sections</span> from the investment perspective: <b><span class="hl">Crypto Market Overview</span></b> (5 dashboards: secondary market, crypto stocks, fundraising, ETF, DEX Pool); <b><span class="hl">Sectors & Indices</span></b> (13 major sectors from Layer1 to applications); <b><span class="hl">Tokens & Projects</span></b> (tokenomics, unlock schedules, team info); <b><span class="hl">News & Research</span></b> (AI-aggregated news, reports, expert opinions); <b><span class="hl">Macroeconomics</span></b> (policy shifts, global conflicts, traditional market dynamics); <b><span class="hl">On-Chain Data</span></b> (blockchain health metrics); and <b><span class="hl">Token Bar</span></b> — a collaborative research community with AI-powered cross-language translation.
+</div>
+<div class="cn-block">
+SoSoValue 对全网数据进行了重新分类和重组，从投资视角建立了<span class="hl">七大板块</span>：<b><span class="hl">加密市场总览</span></b>（5 个子仪表盘：二级市场、加密股票、一级融资、ETF、DEX 池）；<b><span class="hl">板块与指数</span></b>（从 Layer1 到应用的 13 个主要板块）；<b><span class="hl">代币与项目</span></b>（代币经济学、解锁计划、团队信息）；<b><span class="hl">新闻与研究</span></b>（AI 聚合新闻、深度研报、专家观点）；<b><span class="hl">宏观经济</span></b>（政策变化、全球冲突、传统市场动态）；<b><span class="hl">链上数据</span></b>（区块链健康指标）；以及 <b><span class="hl">Token Bar</span></b>——AI 跨语言翻译的协作研究社区。
+</div>
+
+<h3 id="sec3-2">3.2 AI — AI 让效率成为现实</h3>
+<div class="en-block">
+Generative AI revolutionizes investment research in three areas: <b>1. <span class="hl">Data Processing</span></b> — AI intelligently selects and condenses key financial narratives from vast information streams. On coin detail pages, only the most relevant news is shown. The NewsFeed provides a <span class="hl">real-time summary of the 10 most important news items in 24 hours</span>. <b>2. <span class="hl">Analysis & Alerts</span></b> — AI integrates multidimensional information to analyze patterns and deliver timely alerts. The <span class="hl">daily voice briefing</span> delivers concise market updates. <b>3. <span class="hl">Smart Agents</span></b> — Autonomous AI agents monitor markets 24/7, executing predefined strategies and alerting users to anomalies or opportunities.
+</div>
+<div class="cn-block">
+生成式 AI 在三个维度革新投资研究：<b>1. <span class="hl">数据处理</span></b>——AI 从海量信息中智能筛选和凝练关键金融叙事。代币详情页只显示最相关的新闻，NewsFeed 提供<span class="hl">24 小时内最重要的 10 条新闻实时摘要</span>。<b>2. <span class="hl">分析与预警</span></b>——AI 整合多维信息分析市场模式，及时推送可执行洞察。<span class="hl">每日语音简报</span>提供简洁的市场更新。<b>3. <span class="hl">智能代理</span></b>——自主 AI 代理 7×24 监控市场，执行预设策略，预警异常或机会。
+</div>
+
+<h3 id="sec3-3">3.3 Protocol — 协议让投资可靠</h3>
+<div class="en-block">
+The <span class="hl">SSI Protocol</span> leverages on-chain smart contracts to repackage multi-chain, multi-asset portfolios into <span class="hl">Wrapped Tokens (SSI)</span>. These tokens represent a basket of underlying assets, enabling <span class="hl">passive index investing</span> — tracking the value of the underlying spot basket. The protocol eliminates traditional barriers like <span class="hl">high fees, slow settlement, and regional restrictions</span>. Six participant types form the ecosystem: <span class="hl">User</span> (investors), <span class="hl">UNI LP</span> (Uniswap liquidity providers), <span class="hl">WLP</span> (whitelist participants who arbitrage between Uniswap and NAV), <span class="hl">PMM</span> (private market makers providing depth), <span class="hl">Keeper</span> (automated rebalancing and maintenance), and <span class="hl">Index Council</span> (governance over index methodology).
+</div>
+<div class="cn-block">
+<span class="hl">SSI 协议</span>利用链上智能合约将多链、多资产组合重新打包为<span class="hl">封装代币 (SSI)</span>。这些代币代表一篮子底层资产，实现<span class="hl">被动指数投资</span>——跟踪底层现货篮子的价值波动。协议消除了<span class="hl">高费用、慢结算、地域限制</span>等传统障碍。六类参与者构成生态：<span class="hl">用户</span>（投资者）、<span class="hl">UNI LP</span>（Uniswap 流动性提供者）、<span class="hl">WLP</span>（白名单参与者，在 Uniswap 和净值间套利）、<span class="hl">PMM</span>（私有做市商提供深度）、<span class="hl">Keeper</span>（自动化再平衡和维护）、<span class="hl">指数委员会</span>（治理指数方法论）。
+</div>
+
+<h3 id="sec3-4">3.4 Infrastructure — 基础设施让生态可持续</h3>
+<div class="en-block">
+For crypto investment to truly scale, investors need a sustainable underlying infrastructure. This is delivered by <span class="hl">SoDEX</span> — a high-performance, fully on-chain order book DEX eliminating AMM slippage — and <span class="hl">ValueChain</span> — a purpose-built Layer-1 with <span class="hl">HostChain + GuestChain architecture</span> allowing spot, perps, RWA, and other appchains to interoperate while sharing security and liquidity. This modular yet unified design ensures that trading, settlement, and risk management are <span class="hl">transparent, verifiable, and censorship-resistant</span>.
+</div>
+<div class="cn-block">
+加密投资要真正规模化，需要可持续的底层基础设施。这由<span class="hl">SoDEX</span>——高性能全链上订单簿 DEX，消除 AMM 滑点——和<span class="hl">ValueChain</span>——采用<span class="hl">HostChain + GuestChain 架构</span>的专用 Layer-1，让现货、合约、RWA 等应用链共享安全性和流动性——共同交付。这种模块化而统一的设计确保交易、结算和风险管理<span class="hl">透明、可验证、抗审查</span>。
+</div>
+
+<h2 id="sec4">四、市场机遇</h2>
+<div class="en-block">
+Crypto assets are emerging as the foundational consensus of a new economic system. With the <span class="hl">US Bitcoin spot ETF</span> launching in early 2024, over <span class="hl">$35 billion</span> has flowed into the crypto ecosystem. Crypto is reshaping finance on two levels: <span class="hl">Payments</span> — decentralized solutions enable real-time global fund flows without intermediaries; <span class="hl">Assets</span> — <span class="hl">Real World Assets (RWA)</span> tokenize stocks, bonds, and other assets for on-chain trading. The current market cap of <span class="hl">$3.8 trillion</span> is just the beginning. SoSoValue projects: <span class="hl">$15-20 trillion total crypto market cap</span>, <span class="hl">$500B passive index market</span>, and <span class="hl">$50-100B annual data/tech services revenue</span> — all within five years.
+</div>
+<div class="cn-block">
+加密资产正在成为新经济体系的基础共识。2024 年初<span class="hl">美国比特币现货 ETF</span> 获批，至今已有超过 <span class="hl">350 亿美元</span>流入加密生态。加密在两大层面重塑金融：<span class="hl">支付</span>——去中心化方案实现全球资金实时流转，无需中介；<span class="hl">资产</span>——<span class="hl">真实世界资产 (RWA)</span> 将股票、债券等代币化上链交易。当前 <span class="hl">3.8 万亿美元</span>市值只是起点。SoSoValue 预测：五年内<span class="hl">加密总市值 $15-20 万亿</span>，<span class="hl">被动指数市场 $500B</span>，<span class="hl">数据/技术服务年收入 $50-100B</span>。
+</div>
+
+<h2 id="sec5">五、SSI 指数协议</h2>
+
+<h3 id="sec5-1">5.1 协议概述</h3>
+<div class="en-block">
+The <span class="hl">SoSoValue Indexes (SSI) Protocol</span> is a cutting-edge spot index solution built on <span class="hl">EVM-compatible smart contracts</span>. It issues <span class="hl">Wrapped Tokens (SSI)</span> that represent curated baskets of spot crypto assets, tracking the value fluctuations of the underlying basket — effectively achieving <span class="hl">passive index investing</span> on-chain. The protocol is <span class="hl">decentralized</span>, eliminating traditional barriers: high fees, slow settlement times, and regional market access limitations. Users anywhere can gain diversified crypto exposure through a single token.
+</div>
+<div class="cn-block">
+<span class="hl">SSI 指数协议</span>是基于 <span class="hl">EVM 兼容智能合约</span>的前沿现货指数方案。它发行代表精选现货加密资产篮子的<span class="hl">封装代币 (SSI)</span>，跟踪底层篮子价值波动——在链上实现<span class="hl">被动指数投资</span>。协议<span class="hl">去中心化</span>，消除了高费用、慢结算、地域限制等传统障碍。全球用户通过一个代币即可获得多元化加密敞口。
+</div>
+
+<h3 id="sec5-2">5.2 四大指数产品</h3>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;">
+<tr style="background:var(--surface);color:var(--highlight);">
+<th style="padding:8px 12px;border:1px solid var(--border);text-align:left;">产品</th>
+<th style="padding:8px 12px;border:1px solid var(--border);text-align:left;">说明</th>
+</tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">MAG7.ssi</td><td style="padding:8px 12px;border:1px solid var(--border);">Magnificent 7 — 精选 7 大主流蓝筹加密资产，类似加密版"纳指"</td></tr>
+<tr style="background:var(--surface);"><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">MEME.ssi</td><td style="padding:8px 12px;border:1px solid var(--border);">Meme 币指数 — 追踪主流 Meme 代币板块表现</td></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">DEFI.ssi</td><td style="padding:8px 12px;border:1px solid var(--border);">DeFi 指数 — 追踪去中心化金融核心代币组合</td></tr>
+<tr style="background:var(--surface);"><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">USSI</td><td style="padding:8px 12px;border:1px solid var(--border);">对冲版指数 — 含稳定币对冲，降低波动</td></tr>
+</table>
+
+<h3 id="sec5-3">5.3 六方参与者架构</h3>
+<div class="en-block">
+Six roles form the SSI Protocol ecosystem: <b><span class="hl">User</span></b> — purchases index tokens for market beta/alpha. <b><span class="hl">UNI LP</span></b> — provides liquidity on Uniswap, earns trading fees. <b><span class="hl">WLP (Whitelist Participant)</span></b> — mints/redeems SSI through the protocol, balancing Uniswap prices with <span class="hl">NAV</span> via arbitrage. <b><span class="hl">PMM (Private Market Maker)</span></b> — provides deep liquidity and tight spreads. <b><span class="hl">Keeper</span></b> — automated bots handling <span class="hl">rebalancing, NAV updates, and system maintenance</span>. <b><span class="hl">Index Council</span></b> — decentralized governance over index methodology, inclusion criteria, and rebalancing rules.
+</div>
+<div class="cn-block">
+六类角色构成 SSI 协议生态：<b><span class="hl">用户</span></b>——购买指数代币获取市场 beta/alpha。<b><span class="hl">UNI LP</span></b>——在 Uniswap 提供流动性赚手续费。<b><span class="hl">WLP（白名单参与者）</span></b>——通过协议铸造/赎回 SSI，利用<span class="hl">资产净值 (NAV)</span> 在 Uniswap 套利维持价格锚定。<b><span class="hl">PMM（私有做市商）</span></b>——提供深度流动性和窄价差。<b><span class="hl">Keeper</span></b>——自动化机器人处理<span class="hl">再平衡、NAV 更新和系统维护</span>。<b><span class="hl">指数委员会</span></b>——去中心化治理指数方法论、纳入标准和再平衡规则。
+</div>
+
+<h3 id="sec5-4">5.4 指数编制方法论</h3>
+<div class="en-block">
+The SSI index methodology follows a standardized framework: <b>Eligibility</b> — tokens must trade on qualified exchanges (Binance, OKX, Coinbase, Bybit, Bitget), be supported by SoSoValue data, and meet <span class="hl">liquidity and market cap thresholds</span>. <b>Weighting</b> — constituents are weighted by a combination of <span class="hl">market capitalization</span> and <span class="hl">liquidity metrics</span> with <span class="hl">caps on individual weight</span> to ensure diversification. <b>Rebalancing</b> — indices are <span class="hl">periodically rebalanced</span> (monthly/quarterly) with <span class="hl">buffer rules</span> to minimize unnecessary turnover. The methodology is <span class="hl">open-source</span> and governed by the Index Council.
+</div>
+<div class="cn-block">
+SSI 指数方法论遵循标准化框架：<b>纳入资格</b>——代币必须在合格交易所（Binance、OKX、Coinbase、Bybit、Bitget）交易、获 SoSoValue 数据支持、满足<span class="hl">流动性和市值门槛</span>。<b>加权方式</b>——成分按<span class="hl">市值</span>和<span class="hl">流动性指标</span>组合加权，设<span class="hl">单成分权重上限</span>确保分散化。<b>再平衡</b>——指数<span class="hl">定期再平衡</span>（月/季），设<span class="hl">缓冲区规则</span>减少不必要换手。方法论<span class="hl">开源</span>，由指数委员会治理。
+</div>
+
+<div class="formula-box">Index Value = Σ (Constituent_Price_i × Shares_i × Weight_adjustment_i) ÷ Divisor</div>
+
+<h2 id="sec6">六、SOSO 代币经济学</h2>
+
+<h3 id="sec6-1">6.1 SOSO 代币使命</h3>
+<div class="en-block">
+SoSoValue's mission rests on three pillars of <span class="hl">investment equality</span>: <b>Access to quality information</b> — every investor should have free access to institutional-grade crypto research. <b>Transparent passive investment</b> — on-chain spot index products provide the most effective path. <b>Efficient active investment</b> — professional-grade trading within a decentralized environment. The <span class="hl">SOSO token</span> is the <span class="hl">governance and utility token</span> powering this ecosystem — used for staking, fee discounts, governance voting, and protocol incentives.
+</div>
+<div class="cn-block">
+SoSoValue 的使命建立在<span class="hl">投资平等</span>三大支柱上：<b>优质信息获取</b>——每个投资者都应免费获得机构级加密研究。<b>透明的被动投资</b>——链上现货指数产品是最有效路径。<b>高效的主动投资</b>——去中心化环境中的专业级交易。<span class="hl">SOSO 代币</span>是驱动这一生态的<span class="hl">治理和实用代币</span>——用于质押、手续费折扣、治理投票和协议激励。
+</div>
+
+<h3 id="sec6-2">6.2 代币分配</h3>
+<table style="width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;">
+<tr style="background:var(--surface);color:var(--highlight);">
+<th style="padding:8px 12px;border:1px solid var(--border);text-align:left;">分配对象</th>
+<th style="padding:8px 12px;border:1px var(--border);text-align:left;">比例</th>
+<th style="padding:8px 12px;border:1px solid var(--border);text-align:left;">解锁规则</th>
+</tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">核心贡献者</td><td style="padding:8px 12px;border:1px solid var(--border);">33%</td><td style="padding:8px 12px;border:1px solid var(--border);">18 个月锁仓 + 36 个月线性释放</td></tr>
+<tr style="background:var(--surface);"><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">合作伙伴</td><td style="padding:8px 12px;border:1px solid var(--border);">3.5%</td><td style="padding:8px 12px;border:1px solid var(--border);">18 个月锁仓 + 36 个月线性释放</td></tr>
+<tr><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">社区 & 生态</td><td style="padding:8px 12px;border:1px solid var(--border);">40%+</td><td style="padding:8px 12px;border:1px solid var(--border);">交易奖励、质押、空投等</td></tr>
+<tr style="background:var(--surface);"><td style="padding:8px 12px;border:1px solid var(--border);color:var(--accent);font-weight:700;">基金会储备</td><td style="padding:8px 12px;border:1px solid var(--border);">~23%</td><td style="padding:8px 12px;border:1px solid var(--border);">长期生态基金</td></tr>
+</table>
+
+<h3 id="sec6-3">6.3 跨链架构</h3>
+<div class="en-block">
+SOSO was originally deployed as an <span class="hl">ERC-20 token on Ethereum</span>, then bridged to Base. Following the ValueChain mainnet launch, SOSO is designated as the <span class="hl">native token of ValueChain</span>. The cross-chain mechanism uses <span class="hl">Lock-and-Release</span> (not Lock-and-Mint): on the source chain (Ethereum/Base), ERC-20 SOSO is <span class="hl">permanently locked</span> in the bridge contract; on ValueChain, an equivalent amount of <span class="hl">native SOSO is released</span> from the bridge reserve. This ensures every unit on ValueChain is <span class="hl">fully 1:1 backed</span> by locked ERC-20 SOSO, maintaining a constant total circulating supply.
+</div>
+<div class="cn-block">
+SOSO 最初在以太坊上<span class="hl">以 ERC-20 发行</span>，后通过官方桥扩展到 Base。ValueChain 主网上线后，SOSO 被指定为 <span class="hl">ValueChain 的原生代币</span>。跨链采用 <span class="hl">Lock-and-Release（锁定释放）</span>机制而非 Lock-and-Mint：源链（以太坊/Base）上的 ERC-20 SOSO 被<span class="hl">永久锁定</span>在桥合约中；ValueChain 上从桥储备<span class="hl">释放等量原生 SOSO</span>。这确保 ValueChain 上的每个 SOSO 都由锁定的 ERC-20 SOSO <span class="hl">1:1 全额背书</span>，总流通量恒定。
+</div>
+
+<div class="formula-box">以太坊/Base: ERC-20 SOSO → 锁定在桥合约<br>ValueChain:     等量原生 SOSO ← 从桥储备释放<br>总流通量:       恒定不变（锁定量 = 释放量）</div>
+
+</div><!-- /main -->
+
+<div class="sidebar">
+<h3>📖 术语表 Glossary</h3>
+<div class="glossary-item"><div class="term">SSI (SoSoValue Indexes)</div><div class="def">基于链上智能合约的现货加密指数协议，发行 Wrapped Token 代表一篮子资产，实现被动指数投资。</div></div>
+<div class="glossary-item"><div class="term">Wrapped Token</div><div class="def">代表底层一篮子资产的封装代币，持有即相当于按比例持有篮内所有资产。类似 ETF 份额。</div></div>
+<div class="glossary-item"><div class="term">MAG7.ssi</div><div class="def">SoSoValue 的旗舰指数产品，精选 7 大主流蓝筹加密资产。类似传统金融的"Magnificent 7"概念。</div></div>
+<div class="glossary-item"><div class="term">MEME.ssi / DEFI.ssi / USSI</div><div class="def">其他 SSI 指数产品：Meme 板块、DeFi 板块、和对冲版（含稳定币降低波动）。</div></div>
+<div class="glossary-item"><div class="term">NAV (资产净值)</div><div class="def">Net Asset Value。指数篮子中所有底层资产的市场价值总和，是 WLP 套利定价的锚。</div></div>
+<div class="glossary-item"><div class="term">UNI LP</div><div class="def">在 Uniswap 上提供 SSI 代币流动性的用户，赚取 Uniswap 交易手续费。</div></div>
+<div class="glossary-item"><div class="term">WLP (白名单参与者)</div><div class="def">通过协议铸造/赎回 SSI 代币的白名单地址，在 Uniswap 市价和 NAV 之间套利维持价格锚定。</div></div>
+<div class="glossary-item"><div class="term">PMM (私有做市商)</div><div class="def">为 SSI 代币提供深度流动性和窄价差的专业做市商。</div></div>
+<div class="glossary-item"><div class="term">Keeper</div><div class="def">自动化机器人，执行指数再平衡、NAV 更新、系统维护等链上操作，赚取协议费用。</div></div>
+<div class="glossary-item"><div class="term">指数委员会</div><div class="def">去中心化治理机构，决定指数方法论、成分股纳入标准和再平衡规则。</div></div>
+<div class="glossary-item"><div class="term">Token Bar</div><div class="def">SoSoValue 的协作研究社区，支持 AI 跨语言实时翻译，围绕特定代币/板块讨论。</div></div>
+<div class="glossary-item"><div class="term">RWA (真实世界资产)</div><div class="def">将股票、债券、房地产等真实世界资产代币化上链，实现链上发行、定价和交易。</div></div>
+<div class="glossary-item"><div class="term">Lock-and-Release</div><div class="def">SOSO 跨链机制：源链锁定 → 目标链释放等量原生代币。总流通量不变，非传统的 Lock-and-Mint。</div></div>
+<div class="glossary-item"><div class="term">ERC-20</div><div class="def">以太坊代币标准。SOSO 最初以 ERC-20 形式在以太坊发行，迁移到 ValueChain 后成为原生代币。</div></div>
+<div class="glossary-item"><div class="term">ValueChain</div><div class="def">SoSoValue 自建的 Layer-1 区块链，采用 HostChain+GuestChain 架构，为 SoDEX 及生态应用提供专用基础设施。</div></div>
+<div class="glossary-item"><div class="term">HostChain + GuestChain</div><div class="def">ValueChain 架构：HostChain 负责共识和安全，GuestChain（Appchain）各自运行特定应用（现货/合约/RWA 等），数据物理共存实现即时互操作。</div></div>
+
+<h3>🧮 核心公式</h3>
+<div class="mini-formula">Index Value = Σ(P_i × Shares_i × W_i) ÷ Divisor</div>
+<div class="mini-formula">NAV = Σ(Asset_j × Price_j)  // 篮子净资产</div>
+<div class="mini-formula">Lock-and-Release: 源链锁定 = 目标链释放</div>
+<div class="mini-formula">总流通量 = ERC20_流通 + ValueChain_流通 = 恒定</div>
+
+<h3>📊 四大支柱速览</h3>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+<tr style="background:var(--surface);color:var(--highlight);">
+<td style="padding:6px 10px;border:1px solid var(--border);">支柱</td><td style="padding:6px 10px;border:1px solid var(--border);">功能</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">Terminal</td><td style="padding:6px 10px;border:1px solid var(--border);">AI 加密研究终端</td></tr>
+<tr style="background:var(--surface);"><td style="padding:6px 10px;border:1px solid var(--border);">SSI</td><td style="padding:6px 10px;border:1px solid var(--border);">链上现货指数协议</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">SoDEX</td><td style="padding:6px 10px;border:1px solid var(--border);">订单簿去中心化交易所</td></tr>
+<tr style="background:var(--surface);"><td style="padding:6px 10px;border:1px solid var(--border);">ValueChain</td><td style="padding:6px 10px;border:1px solid var(--border);">专用 Layer-1 区块链</td></tr>
+</table>
+
+<h3>💰 代币分配</h3>
+<div style="font-size:12px;color:var(--text-dim);line-height:1.8;">
+🏗️ 核心贡献者 <b style="color:var(--accent);">33%</b> — 18M锁+36M线性<br>
+🤝 合作伙伴 <b style="color:var(--accent);">3.5%</b> — 18M锁+36M线性<br>
+🌍 社区&生态 <b style="color:var(--green);">40%+</b> — 交易/质押/空投<br>
+🏦 基金会储备 <b style="color:var(--purple);">~23%</b> — 长期生态基金
+</div>
+</div>
+</div>
+
+<div class="diagram-section" id="diagram">
+<h2>🏗️ SoSoValue 生态架构全景图</h2>
+<svg class="diagram" viewBox="0 0 1060 820" width="100%" style="max-width:1060px;">
+<defs>
+<filter id="glow"><feGaussianBlur stdDeviation="3"/><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<linearGradient id="gUser" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#1f6feb"/></linearGradient>
+<linearGradient id="gTerm" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a371f7"/><stop offset="100%" stop-color="#8250df"/></linearGradient>
+<linearGradient id="gSSI" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#2ea043"/></linearGradient>
+<linearGradient id="gDex" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0883e"/><stop offset="100%" stop-color="#d2691e"/></linearGradient>
+<linearGradient id="gChain" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#d2991d"/><stop offset="100%" stop-color="#b8860b"/></linearGradient>
+<linearGradient id="gExt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8b949e"/><stop offset="100%" stop-color="#6e7681"/></linearGradient>
+<marker id="arrB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#58a6ff"/></marker>
+</defs>
+<rect x="0" y="0" width="1060" height="820" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+<!-- LAYER 1: Users -->
+<text x="530" y="30" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">👤 用户层 USERS</text>
+<rect x="150" y="42" width="160" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="230" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">散户投资者</text>
+<rect x="370" y="42" width="160" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="450" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">机构投资者</text>
+<rect x="590" y="42" width="160" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="670" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">量化交易者</text>
+<rect x="810" y="42" width="140" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="880" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">LP / 质押者</text>
+
+<text x="530" y="106" text-anchor="middle" fill="#8b949e" font-size="11" letter-spacing="2">━━━━━━━━━ 🧠 信息 & 应用层 ━━━━━━━━━</text>
+
+<!-- LAYER 2: Terminal + SSI + SoDEX -->
+<text x="530" y="136" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700" letter-spacing="3">🏛️ 应用层 APPLICATION LAYER</text>
+
+<!-- Terminal -->
+<rect x="20" y="150" width="230" height="165" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5"/>
+<rect x="20" y="150" width="230" height="28" rx="10" fill="url(#gTerm)"/><rect x="20" y="168" width="230" height="10" fill="url(#gTerm)"/>
+<text x="135" y="170" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">📊 SoSoValue Terminal</text>
+<text x="36" y="200" fill="#c9d1d9" font-size="11">◈ 加密市场总览 (5 仪表盘)</text>
+<text x="36" y="220" fill="#c9d1d9" font-size="11">◈ 13 个行业板块 & 指数</text>
+<text x="36" y="240" fill="#c9d1d9" font-size="11">◈ 代币详情 & 项目分析</text>
+<text x="36" y="260" fill="#c9d1d9" font-size="11">◈ AI 新闻聚合 + 研报</text>
+<text x="36" y="280" fill="#c9d1d9" font-size="11">◈ 宏观经济 & 链上数据</text>
+<text x="36" y="300" fill="#c9d1d9" font-size="11">◈ Token Bar 研究社区</text>
+
+<!-- SSI Protocol -->
+<rect x="275" y="150" width="250" height="165" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<rect x="275" y="150" width="250" height="28" rx="10" fill="url(#gSSI)"/><rect x="275" y="168" width="250" height="10" fill="url(#gSSI)"/>
+<text x="400" y="170" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">📈 SSI 指数协议</text>
+<text x="292" y="200" fill="#c9d1d9" font-size="11">◈ MAG7.ssi — 蓝筹 7 大</text>
+<text x="292" y="220" fill="#c9d1d9" font-size="11">◈ MEME.ssi — Meme 板块</text>
+<text x="292" y="240" fill="#c9d1d9" font-size="11">◈ DEFI.ssi — DeFi 板块</text>
+<text x="292" y="260" fill="#c9d1d9" font-size="11">◈ USSI — 对冲版 (低波动)</text>
+<text x="292" y="280" fill="#8b949e" font-size="11">6 方参与者: User · UNI LP</text>
+<text x="292" y="300" fill="#8b949e" font-size="11">WLP · PMM · Keeper · 委员会</text>
+
+<!-- SoDEX -->
+<rect x="550" y="150" width="230" height="165" rx="10" fill="#161b22" stroke="#f0883e" stroke-width="1.5"/>
+<rect x="550" y="150" width="230" height="28" rx="10" fill="url(#gDex)"/><rect x="550" y="168" width="230" height="10" fill="url(#gDex)"/>
+<text x="665" y="170" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">⚡ SoDEX 交易所</text>
+<text x="565" y="200" fill="#c9d1d9" font-size="11">◈ 订单簿撮合 · 零滑点</text>
+<text x="565" y="220" fill="#c9d1d9" font-size="11">◈ 现货 + 永续合约</text>
+<text x="565" y="240" fill="#c9d1d9" font-size="11">◈ 分级杠杆 + 三段清算</text>
+<text x="565" y="260" fill="#c9d1d9" font-size="11">◈ Mark Price 防操纵</text>
+<text x="565" y="280" fill="#c9d1d9" font-size="11">◈ Mirror Protocol 跨链桥</text>
+<text x="565" y="300" fill="#c9d1d9" font-size="11">◈ SLP 做市金库 (双重收益)</text>
+
+<!-- AI layer -->
+<rect x="810" y="150" width="220" height="165" rx="10" fill="#161b22" stroke="#58a6ff" stroke-width="1.5"/>
+<text x="920" y="170" text-anchor="middle" fill="#58a6ff" font-size="13" font-weight="700">🤖 AI 引擎</text>
+<text x="826" y="200" fill="#c9d1d9" font-size="11">◈ 智能数据筛选 & 摘要</text>
+<text x="826" y="220" fill="#c9d1d9" font-size="11">◈ 24h 十大新闻实时总结</text>
+<text x="826" y="240" fill="#c9d1d9" font-size="11">◈ 每日语音简报</text>
+<text x="826" y="260" fill="#c9d1d9" font-size="11">◈ 市场模式分析 & 预警</text>
+<text x="826" y="280" fill="#c9d1d9" font-size="11">◈ 7×24 自主 AI 代理</text>
+<text x="826" y="300" fill="#c9d1d9" font-size="11">◈ 跨语言实时翻译</text>
+
+<!-- LAYER 3: ValueChain -->
+<text x="530" y="348" text-anchor="middle" fill="#d2991d" font-size="12" font-weight="700" letter-spacing="3">⛓️ ValueChain 基础设施层</text>
+<rect x="100" y="362" width="860" height="32" rx="8" fill="#1a180a" stroke="#d2991d" stroke-width="1.5"/>
+<text x="530" y="383" text-anchor="middle" fill="#d2991d" font-size="13" font-weight="700">🏗️ HostChain — 共识层 · 全局状态 · 跨链消息通道</text>
+<rect x="100" y="404" width="200" height="48" rx="8" fill="#12100a" stroke="#d2991d" stroke-width="1"/>
+<text x="200" y="426" text-anchor="middle" fill="#d2991d" font-size="11" font-weight="700">EVM System Chain</text><text x="200" y="442" text-anchor="middle" fill="#8b949e" font-size="10">统一账户 · 智能合约</text>
+<rect x="320" y="404" width="200" height="48" rx="8" fill="#12100a" stroke="#d2991d" stroke-width="1"/>
+<text x="420" y="426" text-anchor="middle" fill="#d2991d" font-size="11" font-weight="700">Spot Appchain</text><text x="420" y="442" text-anchor="middle" fill="#8b949e" font-size="10">现货订单簿</text>
+<rect x="540" y="404" width="200" height="48" rx="8" fill="#12100a" stroke="#d2991d" stroke-width="1"/>
+<text x="640" y="426" text-anchor="middle" fill="#d2991d" font-size="11" font-weight="700">Perps Appchain</text><text x="640" y="442" text-anchor="middle" fill="#8b949e" font-size="10">合约订单簿</text>
+<rect x="760" y="404" width="200" height="48" rx="8" fill="#12100a" stroke="#d2991d" stroke-width="1" stroke-dasharray="5,3"/>
+<text x="860" y="426" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="700">Future Appchains</text><text x="860" y="442" text-anchor="middle" fill="#6e7681" font-size="10">RWA / 稳定币 / 借贷 …</text>
+
+<!-- LAYER 4: Cross-chain -->
+<text x="530" y="486" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">🌉 跨链 & 资产桥</text>
+<rect x="200" y="498" width="660" height="40" rx="8" fill="#1a180a" stroke="#d2991d" stroke-width="1.5"/>
+<text x="530" y="523" text-anchor="middle" fill="#d2991d" font-size="12" font-weight="700">SOSO Lock-and-Release 跨链桥 · Mirror Protocol (MPC+TEE) · 以太坊 / Base ↔ ValueChain</text>
+
+<!-- LAYER 5: External -->
+<text x="530" y="570" text-anchor="middle" fill="#6e7681" font-size="10" letter-spacing="2">🌐 外部生态 EXTERNAL</text>
+<rect x="80" y="582" width="140" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="150" y="602" text-anchor="middle" fill="#8b949e" font-size="11">Ethereum</text>
+<rect x="248" y="582" width="140" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="318" y="602" text-anchor="middle" fill="#8b949e" font-size="11">Base</text>
+<rect x="416" y="582" width="140" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="486" y="602" text-anchor="middle" fill="#8b949e" font-size="11">Uniswap</text>
+<rect x="584" y="582" width="140" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="654" y="602" text-anchor="middle" fill="#8b949e" font-size="11">CEX (Binance等)</text>
+<rect x="752" y="582" width="140" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="822" y="602" text-anchor="middle" fill="#8b949e" font-size="11">数据提供商</text>
+
+<!-- SOSO TOKEN Flow -->
+<text x="530" y="645" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700" letter-spacing="3">🪙 SOSO 代币流转</text>
+<rect x="60" y="662" width="310" height="56" rx="8" fill="#1a1010" stroke="#f0c040" stroke-width="1"/>
+<text x="215" y="684" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🔒 源链（以太坊 / Base）</text>
+<text x="215" y="706" text-anchor="middle" fill="#8b949e" font-size="11">ERC-20 SOSO → 锁定在桥合约</text>
+<line x1="370" y1="690" x2="410" y2="690" stroke="#f0c040" stroke-width="2" marker-end="url(#arrB)"/>
+<rect x="415" y="662" width="270" height="56" rx="8" fill="#1a1010" stroke="#f0c040" stroke-width="1"/>
+<text x="550" y="684" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🔓 ValueChain（目标链）</text>
+<text x="550" y="706" text-anchor="middle" fill="#8b949e" font-size="11">等量原生 SOSO ← 从储备释放</text>
+<line x1="685" y1="690" x2="725" y2="690" stroke="#f0c040" stroke-width="2" marker-end="url(#arrB)"/>
+<rect x="730" y="662" width="270" height="56" rx="8" fill="#1a1010" stroke="#f0c040" stroke-width="1"/>
+<text x="865" y="684" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🎯 生态用途</text>
+<text x="865" y="706" text-anchor="middle" fill="#8b949e" font-size="11">治理 · 质押 · 手续费折扣 · 激励</text>
+
+<!-- BOTTOM: Token Distribution -->
+<text x="530" y="750" text-anchor="middle" fill="#8b949e" font-size="10" letter-spacing="2">代币分配: 核心贡献者 33% | 合作伙伴 3.5% | 社区&生态 40%+ | 基金会储备 ~23%</text>
+<rect x="60" y="764" width="302" height="36" rx="8" fill="url(#gTerm)" opacity="0.8"/><text x="211" y="787" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">核心贡献者 33% (18M锁+36M线性)</text>
+<rect x="372" y="764" width="103" height="36" rx="8" fill="url(#gDex)" opacity="0.8"/><text x="423" y="787" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">3.5%</text>
+<rect x="485" y="764" width="349" height="36" rx="8" fill="url(#gSSI)" opacity="0.8"/><text x="659" y="787" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">社区 & 生态 40%+ (交易/质押/空投)</text>
+<rect x="844" y="764" width="156" height="36" rx="8" fill="url(#gChain)" opacity="0.8"/><text x="922" y="787" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">储备 ~23%</text>
+</svg>
+</div>
+
+<script>
+(function(){
+const nav=document.querySelector('.nav');if(!nav)return;
+const links=nav.querySelectorAll('a[href^="#"]');
+const sections=[...links].map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+function update(){let c='';for(let i=sections.length-1;i>=0;i--){const r=sections[i].getBoundingClientRect();if(r.top<=160){c=sections[i].id;break}}links.forEach(a=>{const id=a.getAttribute('href').slice(1);a.classList.toggle('active',id===c)})}
+window.addEventListener('scroll',update,{passive:true});update();
+links.forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const el=document.getElementById(a.getAttribute('href').slice(1));if(el)el.scrollIntoView({behavior:'smooth',block:'start'})})});
+})();
+</script>
+</body>
+</html>

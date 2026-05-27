@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hyperliquid 白皮书 — 中英对照解读</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#c9d1d9;--text-dim:#8b949e;--highlight:#f0c040;--highlight-bg:rgba(240,192,64,0.15);--accent:#58a6ff;--accent-dim:rgba(88,166,255,0.12);--red:#f85149;--green:#3fb950;--purple:#a371f7;--orange:#d2991d}
+:root[data-lang="zh"]{--ui-source-label:"EN";--ui-target-label:"中文"}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+.header{background:linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%);border-bottom:1px solid var(--border);padding:32px 48px;position:sticky;top:0;z-index:100}
+.header h1{font-size:24px;color:#fff}.header p{color:var(--text-dim);font-size:14px;margin-top:6px}
+.container{display:flex;max-width:1560px;margin:0 auto}
+.nav{flex:0 0 220px;padding:24px 16px;position:sticky;top:96px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto;border-right:1px solid var(--border);background:var(--bg)}
+.nav-title{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-weight:700}
+.nav a{display:block;color:var(--text-dim);text-decoration:none;font-size:12px;padding:5px 10px;margin:2px 0;border-radius:4px;transition:all .15s;border-left:2px solid transparent}
+.nav a:hover{color:var(--text);background:var(--surface);border-left-color:var(--border)}
+.nav a.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);font-weight:600}
+.nav .sub{padding-left:22px;font-size:11px}.nav .sep{height:12px}
+.main{flex:1 1 65%;min-width:0;padding:32px 40px 80px;border-right:1px solid var(--border)}
+.main h2{font-size:20px;color:var(--accent);margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.main h2:first-child{margin-top:0}
+.main h3{font-size:16px;color:var(--purple);margin:28px 0 10px}
+.en-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 22px;margin:16px 0 8px;position:relative}
+.en-block::before{content:var(--ui-source-label);position:absolute;top:-10px;left:16px;background:#1f6feb;color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:4px}
+.cn-block{background:transparent;padding:14px 22px;margin:0 0 24px;border-left:3px solid var(--green);color:#bdc6d0}
+.cn-block::before{content:var(--ui-target-label);display:block;font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px}
+.hl{color:var(--highlight);font-weight:600}
+.formula-box{background:var(--highlight-bg);border:1px solid rgba(240,192,64,0.3);border-radius:6px;padding:14px 18px;margin:12px 0;font-family:"JetBrains Mono","Consolas",monospace;font-size:14px;color:var(--highlight);overflow-x:auto}
+.example-box{background:rgba(63,185,80,0.08);border:1px solid rgba(63,185,80,0.25);border-radius:6px;padding:14px 18px;margin:10px 0;font-size:14px}
+.example-box::before{content:"📝 示例：";color:var(--green);font-weight:600;display:block;margin-bottom:6px}
+.sidebar{flex:0 0 380px;padding:24px 20px;position:sticky;top:96px;align-self:flex-start;max-height:calc(100vh - 120px);overflow-y:auto}
+.sidebar h3{font-size:14px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:24px 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.sidebar h3:first-child{margin-top:0}
+.glossary-item{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-size:13px}
+.glossary-item .term{color:var(--highlight);font-weight:700;font-size:14px}
+.glossary-item .def{color:var(--text-dim);margin-top:4px}
+.mini-formula{background:var(--highlight-bg);border-radius:4px;padding:6px 10px;margin:6px 0;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--highlight);overflow-x:auto}
+.diagram-section{max-width:1100px;margin:60px auto 40px;padding:32px 20px}
+.diagram-section h2{text-align:center;color:var(--accent);margin-bottom:32px;font-size:22px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:960px){.container{flex-direction:column}.nav,.sidebar{flex:none;position:static;max-height:none;padding:20px 40px}.main{border-right:none}}
+</style>
+</head>
+<body>
+<div class="header"><h1>🔬 Hyperliquid — 高性能 L1 订单簿永续合约 DEX</h1><p>白皮书中英对照解读 · HyperBFT 共识 · HyperCore · HyperEVM · HYPE 代币</p></div>
+<div class="container">
+<nav class="nav">
+<div class="nav-title">📑 目录 Contents</div>
+<a href="#sec1">一、Hyperliquid 是什么</a>
+<a href="#sec2">二、技术架构</a>
+<a href="#sec2-1" class="sub">HyperBFT 共识</a>
+<a href="#sec2-2" class="sub">HyperCore 核心</a>
+<a href="#sec2-3" class="sub">HyperEVM 智能合约</a>
+<div class="sep"></div>
+<a href="#sec3">三、交易机制</a>
+<a href="#sec3-1" class="sub">订单簿 & 订单类型</a>
+<a href="#sec3-2" class="sub">保证金 & 清算</a>
+<div class="sep"></div>
+<a href="#sec4">四、HYPE 代币</a>
+<a href="#sec4-1" class="sub">代币效用</a>
+<a href="#sec4-2" class="sub">费用回购机制</a>
+<div class="sep"></div>
+<a href="#sec5">五、生态与治理</a>
+<a href="#sec5-1" class="sub">HIP 改进提案</a>
+<a href="#sec5-2" class="sub">验证者 & 质押</a>
+<a href="#sec5-3" class="sub">推荐 & 积分</a>
+<div class="sep"></div>
+<a href="#sec6">六、团队与理念</a>
+<div class="sep"></div>
+<a href="#diagram">🏗️ 架构全景图</a>
+</nav>
+
+<div class="main">
+
+<h2 id="sec1">一、Hyperliquid 是什么</h2>
+<div class="en-block">
+Hyperliquid is a <span class="hl">performant Layer-1 blockchain</span> built with the vision of a <span class="hl">fully on-chain open financial system</span>. It's best known for its <span class="hl">perpetual futures and spot order book DEX</span>, which drives billions in daily volume. Over <span class="hl">$1B in annualized fees</span> go toward programmatically <span class="hl">buying back the HYPE token</span>. HYPE is used to <span class="hl">secure the network</span>, pay for network costs, provide <span class="hl">gas for the HyperEVM</span>, and serve as <span class="hl">governance</span>. Hyperliquid modernizes market structure through <span class="hl">transparency</span> (all transactions on a public ledger), <span class="hl">open access</span> (no centralized gatekeepers), <span class="hl">resilience</span> (permissionless validators), and <span class="hl">performance</span> (up to 200,000 TPS).
+</div>
+<div class="cn-block">
+Hyperliquid 是一条<span class="hl">高性能 Layer-1 区块链</span>，愿景是构建<span class="hl">完全链上的开放式金融系统</span>。最知名的是其<span class="hl">永续合约和现货订单簿 DEX</span>，日均交易量数十亿美元。超过 <span class="hl">年化 10 亿美元手续费</span>用于<span class="hl">程序化回购 HYPE 代币</span>。HYPE 用于<span class="hl">保护网络安全</span>、支付网络费用、提供 <span class="hl">HyperEVM Gas</span> 和<span class="hl">治理</span>。Hyperliquid 通过<span class="hl">透明</span>（所有交易记录在公开账本）、<span class="hl">开放访问</span>（无中心化守门人）、<span class="hl">韧性</span>（无许可验证者）和<span class="hl">性能</span>（最高 200,000 TPS）革新市场结构。
+</div>
+
+<h2 id="sec2">二、技术架构</h2>
+
+<h3 id="sec2-1">2.1 HyperBFT — 定制共识算法</h3>
+<div class="en-block">
+Hyperliquid uses a <span class="hl">custom consensus algorithm called HyperBFT</span>, inspired by <span class="hl">Hotstuff</span> and its successors. Both the algorithm and networking stack are <span class="hl">optimized from the ground up</span> to support the unique demands of running a high-performance order book DEX on-chain. The consensus is designed for <span class="hl">low latency</span> (sub-second finality) and <span class="hl">high throughput</span> (up to 200K TPS), making it one of the few blockchains capable of handling <span class="hl">Nasdaq-grade trading volume</span> in a fully decentralized manner.
+</div>
+<div class="cn-block">
+Hyperliquid 使用<span class="hl">自研共识算法 HyperBFT</span>，灵感来自 <span class="hl">Hotstuff</span> 及其后继者。算法和网络栈都<span class="hl">从零优化</span>，专门支持链上运行高性能订单簿 DEX 的独特需求。共识设计目标是<span class="hl">低延迟</span>（亚秒级最终性）和<span class="hl">高吞吐量</span>（最高 200K TPS），使其成为少数能<span class="hl">以去中心化方式处理纳斯达克级交易量</span>的区块链之一。
+</div>
+
+<h3 id="sec2-2">2.2 HyperCore — 链上订单簿引擎</h3>
+<div class="en-block">
+State execution is split into two broad components. <span class="hl">HyperCore</span> includes <span class="hl">fully on-chain perpetual futures and spot order books</span>. Every order, cancel, trade, and liquidation is settled <span class="hl">transparently on-chain</span>. Key modules: <b>Clearinghouse</b> (risk engine, margin, liquidation), <b>Order Book</b> (matching engine), <b>Oracle</b> (price feeds), <b>Bridge</b> (cross-chain deposits/withdrawals), <b>Staking</b> (HYPE delegation), <b>Vaults</b> (automated strategy deposits), and <b>Multi-sig</b> (secure admin operations). Users can also <span class="hl">permissionlessly deploy spot assets</span> through the spot auction mechanism.
+</div>
+<div class="cn-block">
+状态执行分为两大组件。<span class="hl">HyperCore</span> 包含<span class="hl">完全链上的永续合约和现货订单簿</span>。每笔挂单、撤单、成交和清算都<span class="hl">透明地在链上结算</span>。核心模块：<b>清算所</b>（风控引擎、保证金、清算）、<b>订单簿</b>（撮合引擎）、<b>预言机</b>（价格源）、<b>跨链桥</b>（存取款）、<b>质押</b>（HYPE 委托）、<b>金库</b>（自动策略存款）和 <b>多签</b>（安全管理操作）。用户还可以通过现货拍卖机制<span class="hl">无许可部署现货资产</span>。
+</div>
+
+<h3 id="sec2-3">2.3 HyperEVM — EVM 兼容智能合约层</h3>
+<div class="en-block">
+<span class="hl">HyperEVM</span> is NOT a separate chain — it's secured by the <span class="hl">same HyperBFT consensus</span> as HyperCore. This lets the HyperEVM <span class="hl">directly interact with HyperCore's on-chain liquidity</span> in the same block. Builders can deploy standard <span class="hl">ERC-20 contracts</span> and the corresponding spot asset can be deployed permissionlessly in the HyperCore spot auction. A lending protocol could determine liquidation thresholds by reading HyperCore's <span class="hl">oracle prices on-chain</span>. The HyperEVM is currently in <span class="hl">alpha stage</span> — a gradual roll-out prioritizing safety, equal access, and iterative development with real economic activity.
+</div>
+<div class="cn-block">
+<span class="hl">HyperEVM</span> 不是独立链——它与 HyperCore 共享<span class="hl">同一个 HyperBFT 共识</span>。这使 HyperEVM 能在同一区块内<span class="hl">直接与 HyperCore 的链上流动性交互</span>。开发者可部署标准 <span class="hl">ERC-20 合约</span>，对应现货资产通过 HyperCore 拍卖无许可上线。借贷协议可以读取 HyperCore 的<span class="hl">链上预言机价格</span>来确定清算阈值。HyperEVM 目前处于 <span class="hl">Alpha 阶段</span>——渐进式推出，优先考虑安全性、公平准入和真实经济活动中的迭代开发。
+</div>
+
+<h2 id="sec3">三、交易机制</h2>
+
+<h3 id="sec3-1">3.1 订单簿与订单类型</h3>
+<div class="en-block">
+Hyperliquid operates a <span class="hl">fully on-chain central limit order book (CLOB)</span>. Supported order types: <span class="hl">Market Orders</span> (immediate execution at best price), <span class="hl">Limit Orders</span> (specified price or better), <span class="hl">Stop Market/Limit</span> (conditional on trigger price), and <span class="hl">TP/SL</span> (Take Profit / Stop Loss). Features include <span class="hl">self-trade prevention</span>, <span class="hl">builder codes</span> (app monetization — developers earn a share of fees from users), and <span class="hl">sub-accounts</span> for strategy separation. The fee structure uses <span class="hl">maker-taker model</span> with discounts for referral codes (4% off first $25M volume).
+</div>
+<div class="cn-block">
+Hyperliquid 运行<span class="hl">完全链上的中央限价订单簿 (CLOB)</span>。支持订单类型：<span class="hl">市价单</span>（立即以最优价成交）、<span class="hl">限价单</span>（指定价格或更优）、<span class="hl">止损市价/限价单</span>（触发价条件单）和 <span class="hl">TP/SL</span>（止盈止损）。功能包括<span class="hl">自成交防护</span>、<span class="hl">Builder Code</span>（应用变现——开发者分享用户手续费）和<span class="hl">子账户</span>（策略分离）。手续费采用<span class="hl">Maker-Taker 模式</span>，推荐码可获 4% 折扣（首 $25M 交易量）。
+</div>
+
+<h3 id="sec3-2">3.2 保证金、杠杆与清算</h3>
+<div class="en-block">
+Hyperliquid uses <span class="hl">portfolio margin</span> — risk is calculated across the entire portfolio rather than per-position. Key features: <span class="hl">Margin Tiers</span> (position size-based leverage limits — larger positions get lower max leverage), <span class="hl">Robust Price Indices</span> (oracle-based mark price for liquidations, preventing manipulation), <span class="hl">Multi-stage Liquidations</span> (positions are closed via market orders into the order book, with <span class="hl">Auto-Deleveraging (ADL)</span> as last resort), and <span class="hl">Funding Rates</span> (periodic payments between longs and shorts to anchor perp prices to spot). <span class="hl">Account Abstraction modes</span> allow flexible custody setups.
+</div>
+<div class="cn-block">
+Hyperliquid 采用<span class="hl">组合保证金</span>——按整个投资组合而非单仓位计算风险。核心特性：<span class="hl">分级保证金</span>（基于仓位的杠杆限制——大仓位杠杆更低）、<span class="hl">稳健价格指数</span>（基于预言机的标记价格用于清算，防操纵）、<span class="hl">多阶段清算</span>（仓位通过市价单挂入订单簿平仓，<span class="hl">自动减仓 ADL</span> 为最后手段）和<span class="hl">资金费率</span>（多头与空头之间定期支付，将合约价格锚定现货）。<span class="hl">账户抽象模式</span>支持灵活的托管设置。
+</div>
+
+<div class="formula-box">组合保证金: 风险 = f(全组合仓位) 而非 Σ(各仓位风险)<br>维持保证金率 = 初始保证金率(最大杠杆) ÷ 2</div>
+
+<h2 id="sec4">四、HYPE 代币</h2>
+
+<h3 id="sec4-1">4.1 代币效用</h3>
+<div class="en-block">
+<span class="hl">HYPE</span> is the native token of Hyperliquid with multiple utility functions: <b>Network Security</b> — staked by validators and delegators to secure the HyperBFT consensus; <b>Gas Token</b> — pays for computation on the HyperEVM; <b>Governance</b> — used in <span class="hl">HIP (Hyperliquid Improvement Proposals)</span> voting; <b>Fee Payment</b> — trading fees and network costs. HYPE is <span class="hl">not an ERC-20</span> — it follows <span class="hl">HIP-1</span>, the native token standard on Hyperliquid. The total supply and distribution were designed around the principle of <span class="hl">no insiders, no VCs</span> — the team is entirely self-funded.
+</div>
+<div class="cn-block">
+<span class="hl">HYPE</span> 是 Hyperliquid 的原生代币，具有多重效用：<b>网络安全</b>——由验证者和委托者质押以保护 HyperBFT 共识；<b>Gas 代币</b>——支付 HyperEVM 计算费用；<b>治理</b>——用于 <span class="hl">HIP 提案</span>投票；<b>费用支付</b>——交易手续费和网络成本。HYPE <span class="hl">不是 ERC-20</span>——它遵循 <span class="hl">HIP-1</span>，即 Hyperliquid 的原生代币标准。总供应量和分配围绕<span class="hl">"无私募、无 VC"</span>原则设计——团队完全自筹资金。
+</div>
+
+<h3 id="sec4-2">4.2 费用回购机制</h3>
+<div class="en-block">
+One of Hyperliquid's most distinctive tokenomic features: <span class="hl">all protocol fees are used to programmatically buy back HYPE</span> from the open market. With over <span class="hl">$1B in annualized trading fees</span>, this creates continuous buy pressure. The mechanism is reminiscent of <span class="hl">stock buybacks</span> in traditional finance — but executed transparently on-chain. Two additional token distribution channels: <span class="hl">Builder Codes</span> (app developers earn a share of fees from users they onboard) and the <span class="hl">Referral Program</span> (10% of referred users' fees for first $1B volume, 4% discount for the referred user on first $25M).
+</div>
+<div class="cn-block">
+Hyperliquid 最具特色的代币经济学设计：<span class="hl">所有协议手续费用于程序化从公开市场回购 HYPE</span>。年化手续费超过 <span class="hl">10 亿美元</span>，创造持续买盘。机制类似传统金融中的<span class="hl">股票回购</span>——但在链上透明执行。另外两个代币分发渠道：<span class="hl">Builder Code</span>（应用开发者从引入的用户手续费中分成）和<span class="hl">推荐计划</span>（推荐人获被推荐用户 10% 手续费，上限 $1B；被推荐用户享 4% 折扣，上限 $25M）。
+</div>
+
+<div class="formula-box">HYPE 回购 = Σ(所有协议手续费) → 程序化市价买入 HYPE<br>年化回购规模: > $1B</div>
+
+<h2 id="sec5">五、生态与治理</h2>
+
+<h3 id="sec5-1">5.1 HIP 改进提案</h3>
+<div class="en-block">
+Governance is driven through <span class="hl">Hyperliquid Improvement Proposals (HIPs)</span>. Key HIPs: <b><span class="hl">HIP-1</span></b> — Native token standard (HYPE and ecosystem tokens); <b><span class="hl">HIP-2</span></b> — Hyperliquidity (deep liquidity incentives for on-chain order books); <b><span class="hl">HIP-3</span></b> — Builder-deployed perpetuals (anyone can propose and launch new perpetual contract markets); <b><span class="hl">HIP-4</span></b> — Outcome markets (prediction markets / event contracts). This modular governance allows the protocol to evolve through community consensus while maintaining the technical integrity of the core matching engine.
+</div>
+<div class="cn-block">
+治理通过<span class="hl">Hyperliquid 改进提案 (HIP)</span> 驱动。关键 HIP：<b><span class="hl">HIP-1</span></b>——原生代币标准（HYPE 及生态代币）；<b><span class="hl">HIP-2</span></b>——Hyperliquidity（链上订单簿深度流动性激励）；<b><span class="hl">HIP-3</span></b>——开发者部署永续合约（任何人可提议和上线新合约市场）；<b><span class="hl">HIP-4</span></b>——结果市场（预测市场/事件合约）。这种模块化治理使协议通过社区共识演进，同时保持核心撮合引擎的技术完整性。
+</div>
+
+<h3 id="sec5-2">5.2 验证者与质押</h3>
+<div class="en-block">
+Hyperliquid is secured by a <span class="hl">permissionless set of independent validators</span> running the HyperBFT consensus. HYPE holders can <span class="hl">delegate their tokens to validators</span> to earn staking rewards while contributing to network security. Validators are responsible for block production, transaction ordering, and maintaining the integrity of the on-chain order book state. The <span class="hl">delegation program</span> aligns incentives between token holders and network operators.
+</div>
+<div class="cn-block">
+Hyperliquid 由一组<span class="hl">无许可的独立验证者</span>运行 HyperBFT 共识来保护。HYPE 持有者可以<span class="hl">将代币委托给验证者</span>，在贡献网络安全的同时赚取质押奖励。验证者负责区块生产、交易排序和维护链上订单簿状态的完整性。<span class="hl">委托计划</span>使代币持有者和网络运营者的激励保持一致。
+</div>
+
+<h3 id="sec5-3">5.3 积分与推荐</h3>
+<div class="en-block">
+The <span class="hl">Points Program</span> ran from November 2023 to November 2024 across two phases: Phase 1 distributed <span class="hl">1,000,000 points weekly</span> for 6 months; Phase 2 (L1 phase) distributed <span class="hl">700,000 points weekly</span>. Points rewarded users contributing to the protocol's success through trading activity. Affiliates earned 1 point for every 4 points their referred users earned. The <span class="hl">Referral Program</span> continues post-points: referrers earn 10% of referred fees (first $1B volume), referred users get 4% discount (first $25M).
+</div>
+<div class="cn-block">
+<span class="hl">积分计划</span>从 2023 年 11 月运行至 2024 年 11 月，分两阶段：第一阶段每周分发 <span class="hl">100 万积分</span>，持续 6 个月；第二阶段（L1 阶段）每周分发 <span class="hl">70 万积分</span>。积分奖励通过交易活动为协议成功做出贡献的用户。推荐人每获得 4 个积分，其被推荐用户获得 1 个积分。<span class="hl">推荐计划</span>在积分阶段后继续：推荐人获被推荐人 10% 手续费（上限 $1B），被推荐人享 4% 折扣（上限 $25M）。
+</div>
+
+<h2 id="sec6">六、团队与理念</h2>
+<div class="en-block">
+Core development is led by <span class="hl">Hyperliquid Labs</span>, founded by <span class="hl">Jeff and iliensinc</span> (Harvard classmates). Team members are from <span class="hl">Caltech and MIT</span>, with prior experience at <span class="hl">Airtable, Citadel, Hudson River Trading, and Nuro</span>. The team started with proprietary crypto market making in 2020, expanded into DeFi in 2022, and built Hyperliquid after finding existing platforms plagued by <span class="hl">poor market design, bad tech, and clunky UX</span>. Crucially: Hyperliquid is <span class="hl">fully self-funded</span> — <span class="hl">no VCs, no external capital</span>. This allows the team to focus on building without external pressure. The guiding principle is <span class="hl">"no insiders"</span> — everyone has equal access on a level playing field.
+</div>
+<div class="cn-block">
+核心开发由 <span class="hl">Hyperliquid Labs</span> 领导，创始人为 <span class="hl">Jeff 和 iliensinc</span>（哈佛同学）。团队成员来自<span class="hl">加州理工和 MIT</span>，曾在 <span class="hl">Airtable、Citadel、Hudson River Trading 和 Nuro</span> 工作。团队 2020 年开始做加密做市商，2022 年进入 DeFi，在发现现有平台存在<span class="hl">糟糕的市场设计、差劲的技术和笨拙的用户体验</span>后构建了 Hyperliquid。最关键的是：Hyperliquid <span class="hl">完全自筹资金</span>——<span class="hl">没有 VC、没有外部资本</span>。这使团队能专注于构建而不受外部压力。指导原则是<span class="hl">"无私募方"</span>——每个人在公平的起跑线上拥有平等访问权。
+</div>
+
+</div><!-- /main -->
+
+<div class="sidebar">
+<h3>📖 术语表 Glossary</h3>
+<div class="glossary-item"><div class="term">HyperBFT</div><div class="def">Hyperliquid 自研共识算法，受 Hotstuff 启发，为链上订单簿 DEX 从零优化。支持亚秒级最终性、200K TPS。</div></div>
+<div class="glossary-item"><div class="term">HyperCore</div><div class="def">Hyperliquid 的核心状态执行组件。包含链上永续合约和现货订单簿、清算所、预言机、跨链桥、质押和金库。</div></div>
+<div class="glossary-item"><div class="term">HyperEVM</div><div class="def">与 HyperCore 共享 HyperBFT 共识的 EVM 兼容智能合约层。不是独立链，可在同一区块内直接与 HyperCore 流动性交互。</div></div>
+<div class="glossary-item"><div class="term">HYPE</div><div class="def">Hyperliquid 原生代币（HIP-1 标准）。用于网络安全（质押）、Gas 费、治理投票和费用支付。年化 >$1B 手续费用于回购。</div></div>
+<div class="glossary-item"><div class="term">HIP (改进提案)</div><div class="def">Hyperliquid Improvement Proposal。社区驱动的治理提案：HIP-1 代币标准、HIP-2 流动性、HIP-3 开发者部署合约、HIP-4 预测市场。</div></div>
+<div class="glossary-item"><div class="term">CLOB (订单簿)</div><div class="def">Central Limit Order Book。中央限价订单簿，撮合买卖挂单。零滑点、精确执行。纳斯达克使用的就是 CLOB。</div></div>
+<div class="glossary-item"><div class="term">永续合约 (Perps)</div><div class="def">没有到期日的期货合约，通过资金费率机制锚定现货价格。币圈最主流的衍生品。</div></div>
+<div class="glossary-item"><div class="term">组合保证金</div><div class="def">按整个投资组合而非单个仓位计算风险。一个方向的盈利可抵消另一方向的亏损，资金效率更高。</div></div>
+<div class="glossary-item"><div class="term">ADL (自动减仓)</div><div class="def">最后防线清算机制：盈利最多×杠杆最高的对手方被强制以标记价格平仓，防止平台坏账。</div></div>
+<div class="glossary-item"><div class="term">资金费率 (Funding Rate)</div><div class="def">永续合约中多头和空头之间的定期支付。当合约价格高于现货时，多头支付空头（反之亦然），使合约价格回归现货。</div></div>
+<div class="glossary-item"><div class="term">Builder Code</div><div class="def">Hyperliquid 的应用变现机制。开发者创建前端/工具，从其引入用户的交易手续费中获得分成。</div></div>
+<div class="glossary-item"><div class="term">Mark Price (标记价格)</div><div class="def">基于预言机的"公允价格"，用于清算判断。非最新成交价，防恶意插针操纵。</div></div>
+<div class="glossary-item"><div class="term">Hotstuff</div><div class="def">一种拜占庭容错 (BFT) 共识协议，以线性通信复杂度和快速最终性著称。HyperBFT 的灵感来源。</div></div>
+<div class="glossary-item"><div class="term">L1 (Layer-1)</div><div class="def">底层区块链，处理共识、安全和交易执行。以太坊、Solana、Hyperliquid 都是 L1。</div></div>
+<div class="glossary-item"><div class="term">EVM (以太坊虚拟机)</div><div class="def">Ethereum Virtual Machine。运行智能合约的运行时环境。HyperEVM 兼容 EVM，意味着以太坊生态工具可复用。</div></div>
+
+<h3>🧮 核心机制</h3>
+<div class="mini-formula">HyperBFT 共识：亚秒级最终性 | 200K TPS</div>
+<div class="mini-formula">HYPE 回购：手续费 → 程序化买入 HYPE | > $1B/年</div>
+<div class="mini-formula">组合保证金：风险 = f(全组合) 而非 Σ 单仓位</div>
+<div class="mini-formula">维持保证金率 = 初始保证金率(最大杠杆) ÷ 2</div>
+<div class="mini-formula">推荐：推荐人获 10% 手续费 (≤$1B) | 被推荐人 4% 折扣 (≤$25M)</div>
+
+<h3>📊 HyperCore 模块</h3>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+<tr style="background:var(--surface);color:var(--highlight);"><td style="padding:6px 10px;border:1px solid var(--border);">模块</td><td style="padding:6px 10px;border:1px solid var(--border);">功能</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">Clearinghouse</td><td style="padding:6px 10px;border:1px solid var(--border);">风控 · 保证金 · 清算</td></tr>
+<tr style="background:var(--surface);"><td style="padding:6px 10px;border:1px solid var(--border);">Order Book</td><td style="padding:6px 10px;border:1px solid var(--border);">撮合引擎 · CLOB</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">Oracle</td><td style="padding:6px 10px;border:1px solid var(--border);">价格源 · Mark Price</td></tr>
+<tr style="background:var(--surface);"><td style="padding:6px 10px;border:1px solid var(--border);">Bridge</td><td style="padding:6px 10px;border:1px solid var(--border);">跨链存取款</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">Staking</td><td style="padding:6px 10px;border:1px solid var(--border);">HYPE 质押 · 委托</td></tr>
+<tr style="background:var(--surface);"><td style="padding:6px 10px;border:1px solid var(--border);">Vaults</td><td style="padding:6px 10px;border:1px solid var(--border);">自动策略金库</td></tr>
+</table>
+
+<h3>🏛️ HIP 提案一览</h3>
+<div style="font-size:12px;color:var(--text-dim);line-height:1.8;">
+<b style="color:var(--accent);">HIP-1</b> — 原生代币标准 (HYPE)<br>
+<b style="color:var(--accent);">HIP-2</b> — Hyperliquidity 流动性激励<br>
+<b style="color:var(--accent);">HIP-3</b> — 开发者部署永续合约市场<br>
+<b style="color:var(--accent);">HIP-4</b> — 结果市场 / 预测市场
+</div>
+
+<h3>💡 为什么 Hyperliquid 特殊</h3>
+<div style="font-size:12px;color:var(--text-dim);line-height:1.8;">
+✅ <b style="color:var(--green);">自筹资金</b> — 无 VC、无外部资本<br>
+✅ <b style="color:var(--green);">无私募方</b> — 公平起跑线<br>
+✅ <b style="color:var(--green);">哈佛/MIT 团队</b> — Citadel、HRT 背景<br>
+✅ <b style="color:var(--green);">>$1B 年化回购</b> — 真实收入驱动<br>
+✅ <b style="color:var(--green);">200K TPS</b> — 纳斯达克级性能<br>
+✅ <b style="color:var(--green);">完全链上</b> — 透明可验证
+</div>
+</div>
+</div>
+
+<div class="diagram-section" id="diagram">
+<h2>🏗️ Hyperliquid 生态架构全景图</h2>
+<svg class="diagram" viewBox="0 0 1060 820" width="100%" style="max-width:1060px;">
+<defs>
+<linearGradient id="gUser" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#1f6feb"/></linearGradient>
+<linearGradient id="gCore" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a371f7"/><stop offset="100%" stop-color="#8250df"/></linearGradient>
+<linearGradient id="gEVM" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#2ea043"/></linearGradient>
+<linearGradient id="gHYPE" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c040"/><stop offset="100%" stop-color="#d4a017"/></linearGradient>
+<linearGradient id="gExt" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#8b949e"/><stop offset="100%" stop-color="#6e7681"/></linearGradient>
+<marker id="arrB" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#58a6ff"/></marker>
+<marker id="arrP" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#a371f7"/></marker>
+</defs>
+<rect x="0" y="0" width="1060" height="820" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+<!-- USERS -->
+<text x="530" y="30" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">👤 用户 & 开发者</text>
+<rect x="120" y="42" width="160" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="200" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">永续合约交易者</text>
+<rect x="320" y="42" width="140" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="390" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">现货交易者</text>
+<rect x="500" y="42" width="140" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="570" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">HYPE 质押者</text>
+<rect x="680" y="42" width="140" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="750" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">Builder 开发者</text>
+<rect x="860" y="42" width="120" height="34" rx="8" fill="url(#gUser)" opacity="0.9"/><text x="920" y="64" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">验证者</text>
+
+<text x="530" y="106" text-anchor="middle" fill="#8b949e" font-size="11" letter-spacing="2">━━━━━━━━━ ⚡ 应用入口 ━━━━━━━━━</text>
+
+<!-- HYPERCORE + EVM -->
+<text x="530" y="138" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700" letter-spacing="3">🏛️ Hyperliquid 链上核心</text>
+
+<!-- HyperCore -->
+<rect x="25" y="152" width="490" height="195" rx="10" fill="#161b22" stroke="#a371f7" stroke-width="1.5"/>
+<rect x="25" y="152" width="490" height="28" rx="10" fill="url(#gCore)"/><rect x="25" y="170" width="490" height="10" fill="url(#gCore)"/>
+<text x="270" y="172" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">⚙️ HyperCore — 订单簿引擎</text>
+<text x="45" y="206" fill="#c9d1d9" font-size="11">◈ <b>Clearinghouse</b> — 风控引擎 · 组合保证金 · 分级杠杆 · 多阶段清算 + ADL</text>
+<text x="45" y="226" fill="#c9d1d9" font-size="11">◈ <b>Order Book</b> — 链上 CLOB 撮合 · 限价/市价/止损/TP-SL · 自成交防护</text>
+<text x="45" y="246" fill="#c9d1d9" font-size="11">◈ <b>Oracle</b> — 多源预言机价格 · Mark Price 防操纵</text>
+<text x="45" y="266" fill="#c9d1d9" font-size="11">◈ <b>Bridge</b> — 跨链存取款 · <b>Staking</b> — HYPE 质押委托 · <b>Vaults</b> — 自动策略金库</text>
+<text x="45" y="286" fill="#c9d1d9" font-size="11">◈ <b>Funding Rate</b> — 资金费率锚定现货 · <b>Builder Codes</b> — 应用变现分成</text>
+<text x="45" y="310" fill="#8b949e" font-size="11">🟣 永续合约 + 现货  |  透明链上结算  |  超 $1B 年化手续费</text>
+
+<!-- Arrow Core→EVM -->
+<line x1="515" y1="250" x2="545" y2="250" stroke="#a371f7" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+<!-- HyperEVM -->
+<rect x="550" y="152" width="480" height="195" rx="10" fill="#161b22" stroke="#3fb950" stroke-width="1.5"/>
+<rect x="550" y="152" width="480" height="28" rx="10" fill="url(#gEVM)"/><rect x="550" y="170" width="480" height="10" fill="url(#gEVM)"/>
+<text x="790" y="172" text-anchor="middle" fill="#fff" font-size="14" font-weight="700">🟢 HyperEVM — 智能合约层 (Alpha)</text>
+<text x="570" y="206" fill="#c9d1d9" font-size="11">◈ <b>共享 HyperBFT 共识</b> — 非独立链，同一区块内与 HyperCore 交互</text>
+<text x="570" y="226" fill="#c9d1d9" font-size="11">◈ <b>EVM 兼容</b> — 标准 ERC-20 合约 · MetaMask · Solidity · Hardhat</text>
+<text x="570" y="246" fill="#c9d1d9" font-size="11">◈ <b>直接读取 HyperCore 预言机价格</b> — 借贷协议可链上获取清算价格</text>
+<text x="570" y="266" fill="#c9d1d9" font-size="11">◈ <b>无许可部署</b> — ERC-20 → HyperCore 现货拍卖一键上线</text>
+<text x="570" y="286" fill="#c9d1d9" font-size="11">◈ <b>渐进推出</b> — 安全性优先 · 无私募方 · 真实经济活动迭代</text>
+<text x="570" y="310" fill="#8b949e" font-size="11">🟢 借贷 · 稳定币 · 预测市场 · 生态 dApp</text>
+
+<!-- HYPERBFT -->
+<rect x="180" y="370" width="700" height="38" rx="8" fill="#1a1020" stroke="#a371f7" stroke-width="1.5"/>
+<text x="530" y="394" text-anchor="middle" fill="#a371f7" font-size="13" font-weight="700">🔗 HyperBFT 共识层 — 自研 Hotstuff 变体 · 亚秒级最终性 · 最高 200,000 TPS</text>
+
+<!-- HYPE TOKEN -->
+<text x="530" y="442" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700" letter-spacing="3">🪙 HYPE 代币经济</text>
+<rect x="40" y="456" width="245" height="60" rx="8" fill="#1a180a" stroke="#f0c040" stroke-width="1"/>
+<text x="162" y="478" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">📥 收入来源</text>
+<text x="162" y="498" text-anchor="middle" fill="#8b949e" font-size="11">永续合约手续费 + 现货手续费</text>
+<text x="162" y="512" text-anchor="middle" fill="#8b949e" font-size="10">>$1B 年化</text>
+
+<line x1="285" y1="486" x2="315" y2="486" stroke="#f0c040" stroke-width="2" marker-end="url(#arrB)"/>
+
+<rect x="320" y="456" width="245" height="60" rx="8" fill="#1a180a" stroke="#f0c040" stroke-width="1"/>
+<text x="442" y="478" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🔄 程序化回购</text>
+<text x="442" y="498" text-anchor="middle" fill="#8b949e" font-size="11">所有手续费 → 公开市场买入 HYPE</text>
+<text x="442" y="512" text-anchor="middle" fill="#8b949e" font-size="10">链上透明执行</text>
+
+<line x1="565" y1="486" x2="595" y2="486" stroke="#f0c040" stroke-width="2" marker-end="url(#arrB)"/>
+
+<rect x="600" y="456" width="245" height="60" rx="8" fill="#1a180a" stroke="#f0c040" stroke-width="1"/>
+<text x="722" y="478" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🎯 代币效用</text>
+<text x="722" y="498" text-anchor="middle" fill="#8b949e" font-size="11">质押 · Gas · 治理 · 生态激励</text>
+<text x="722" y="512" text-anchor="middle" fill="#8b949e" font-size="10">HIP 投票 · 推荐奖励</text>
+
+<!-- VALIDATORS & GOVERNANCE -->
+<text x="530" y="552" text-anchor="middle" fill="#8b949e" font-size="11" font-weight="600" letter-spacing="2">🔐 网络安全 & 治理</text>
+<rect x="100" y="564" width="280" height="48" rx="8" fill="#161b22" stroke="#a371f7" stroke-width="1"/>
+<text x="240" y="586" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700">🔒 无许可验证者网络</text><text x="240" y="604" text-anchor="middle" fill="#8b949e" font-size="11">HYPE 质押委托 · HyperBFT 共识</text>
+<rect x="420" y="564" width="260" height="48" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<text x="550" y="586" text-anchor="middle" fill="#3fb950" font-size="12" font-weight="700">🗳️ HIP 治理</text><text x="550" y="604" text-anchor="middle" fill="#8b949e" font-size="11">HIP-1/2/3/4 · 社区提案 · HYPE 投票</text>
+<rect x="720" y="564" width="240" height="48" rx="8" fill="#161b22" stroke="#f0c040" stroke-width="1"/>
+<text x="840" y="586" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🏗️ Builder Codes</text><text x="840" y="604" text-anchor="middle" fill="#8b949e" font-size="11">开发者手续费分成 · 生态激励</text>
+
+<!-- EXTERNAL -->
+<text x="530" y="646" text-anchor="middle" fill="#6e7681" font-size="10" letter-spacing="2">🌐 外部连接</text>
+<rect x="80" y="658" width="160" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="160" y="678" text-anchor="middle" fill="#8b949e" font-size="11">Arbitrum / 其他 L2</text>
+<rect x="268" y="658" width="160" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="348" y="678" text-anchor="middle" fill="#8b949e" font-size="11">预言机网络</text>
+<rect x="456" y="658" width="160" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="536" y="678" text-anchor="middle" fill="#8b949e" font-size="11">做市商 & 机构</text>
+<rect x="644" y="658" width="160" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="724" y="678" text-anchor="middle" fill="#8b949e" font-size="11">API / SDK 用户</text>
+<rect x="832" y="658" width="160" height="30" rx="6" fill="#161b22" stroke="#6e7681" stroke-width="1"/><text x="912" y="678" text-anchor="middle" fill="#8b949e" font-size="11">CCXT 集成</text>
+
+<!-- BOTTOM BAR -->
+<rect x="40" y="720" width="980" height="80" rx="10" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+<text x="530" y="746" text-anchor="middle" fill="#8b949e" font-size="12">💡 <b style="color:#fff">为什么 Hyperliquid 脱颖而出</b></text>
+<text x="530" y="770" text-anchor="middle" fill="#8b949e" font-size="12">🏫 <b style="color:var(--accent);">哈佛/MIT 团队</b> · Citadel/HRT 背景 &nbsp;|&nbsp; 💰 <b style="color:var(--green);">自筹资金 · 无 VC</b> &nbsp;|&nbsp; 🔒 <b style="color:var(--purple);">无私募方 · 公平起跑线</b></text>
+<text x="530" y="790" text-anchor="middle" fill="#8b949e" font-size="12">⚡ <b style="color:var(--orange);">200K TPS</b> · 纳斯达克级性能 &nbsp;|&nbsp; 🔄 <b style="color:var(--highlight);">>$1B 年化回购</b> · 真实收入驱动 &nbsp;|&nbsp; 🔍 <b style="color:var(--green);">完全链上</b> · 透明可验证</text>
+</svg>
+</div>
+
+<script>
+(function(){
+const nav=document.querySelector('.nav');if(!nav)return;
+const links=nav.querySelectorAll('a[href^="#"]');
+const sections=[...links].map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+function update(){let c='';for(let i=sections.length-1;i>=0;i--){const r=sections[i].getBoundingClientRect();if(r.top<=160){c=sections[i].id;break}}links.forEach(a=>{const id=a.getAttribute('href').slice(1);a.classList.toggle('active',id===c)})}
+window.addEventListener('scroll',update,{passive:true});update();
+links.forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const el=document.getElementById(a.getAttribute('href').slice(1));if(el)el.scrollIntoView({behavior:'smooth',block:'start'})})});
+})();
+</script>
+</body>
+</html>

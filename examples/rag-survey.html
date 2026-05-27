@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAG 综述 — 大语言模型的检索增强生成</title>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#c9d1d9;--text-dim:#8b949e;--highlight:#f0c040;--highlight-bg:rgba(240,192,64,0.15);--accent:#58a6ff;--accent-dim:rgba(88,166,255,0.12);--red:#f85149;--green:#3fb950;--purple:#a371f7;--orange:#d2991d}
+:root[data-lang="zh"]{--ui-source-label:"EN";--ui-target-label:"中文"}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans SC",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+.header{background:linear-gradient(135deg,#1a1f2e 0%,#0d1117 100%);border-bottom:1px solid var(--border);padding:24px 48px;position:sticky;top:0;z-index:100}
+.header h1{font-size:22px;color:#fff}.header .meta{color:var(--text-dim);font-size:13px;margin-top:4px}
+.header .meta span{color:var(--accent)}
+.container{display:flex;max-width:1560px;margin:0 auto}
+.nav{flex:0 0 220px;padding:24px 16px;position:sticky;top:88px;align-self:flex-start;max-height:calc(100vh - 110px);overflow-y:auto;border-right:1px solid var(--border);background:var(--bg)}
+.nav-title{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;font-weight:700}
+.nav a{display:block;color:var(--text-dim);text-decoration:none;font-size:12px;padding:5px 10px;margin:2px 0;border-radius:4px;transition:all .15s;border-left:2px solid transparent}
+.nav a:hover{color:var(--text);background:var(--surface);border-left-color:var(--border)}
+.nav a.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);font-weight:600}
+.nav .sub{padding-left:22px;font-size:11px}.nav .sep{height:12px}
+.main{flex:1 1 65%;min-width:0;padding:32px 40px 80px;border-right:1px solid var(--border)}
+.main h2{font-size:20px;color:var(--accent);margin:48px 0 16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.main h2:first-child{margin-top:0}
+.main h3{font-size:16px;color:var(--purple);margin:28px 0 10px}
+.en-block{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:18px 22px;margin:16px 0 8px;position:relative}
+.en-block::before{content:var(--ui-source-label);position:absolute;top:-10px;left:16px;background:#1f6feb;color:#fff;font-size:11px;font-weight:700;padding:2px 10px;border-radius:4px}
+.cn-block{background:transparent;padding:14px 22px;margin:0 0 24px;border-left:3px solid var(--green);color:#bdc6d0}
+.cn-block::before{content:var(--ui-target-label);display:block;font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px}
+.hl{color:var(--highlight);font-weight:600}
+.figure-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px;margin:20px 0;text-align:center}
+.figure-box img{max-width:100%;border-radius:4px}
+.figure-box .caption{color:var(--text-dim);font-size:12px;margin-top:10px;text-align:left}
+.formula-box{background:var(--highlight-bg);border:1px solid rgba(240,192,64,0.3);border-radius:6px;padding:14px 18px;margin:12px 0;font-family:"JetBrains Mono","Consolas",monospace;font-size:14px;color:var(--highlight);overflow-x:auto}
+.ref-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 16px;margin:8px 0;font-size:12px;color:var(--text-dim)}
+.sidebar{flex:0 0 360px;padding:24px 20px;position:sticky;top:88px;align-self:flex-start;max-height:calc(100vh - 110px);overflow-y:auto}
+.sidebar h3{font-size:14px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin:24px 0 10px;border-bottom:1px solid var(--border);padding-bottom:6px}
+.sidebar h3:first-child{margin-top:0}
+.glossary-item{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin:8px 0;font-size:13px}
+.glossary-item .term{color:var(--highlight);font-weight:700;font-size:14px}
+.glossary-item .def{color:var(--text-dim);margin-top:4px}
+.diagram-section{max-width:1100px;margin:60px auto 40px;padding:32px 20px}
+.diagram-section h2{text-align:center;color:var(--accent);margin-bottom:32px;font-size:22px}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+@media(max-width:960px){.container{flex-direction:column}.nav,.sidebar{flex:none;position:static;max-height:none;padding:20px 40px}.main{border-right:none}}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>📄 RAG 综述：大语言模型的检索增强生成</h1>
+<div class="meta">
+Gao et al. (2024) · <span>Tongji University & Fudan University</span> · arXiv: 2312.10997v5 · 21 pages
+</div>
+</div>
+
+<div class="container">
+<nav class="nav">
+<div class="nav-title">📑 论文目录</div>
+<a href="#abstract">摘要 Abstract</a>
+<a href="#sec1">I. 引言 Introduction</a>
+<a href="#sec2">II. RAG 概览 Overview</a>
+<a href="#sec3">III. 检索 Retrieval</a>
+<a href="#sec4">IV. 生成 Generation</a>
+<a href="#sec5">V. 增强 Augmentation</a>
+<a href="#sec6">VI. 评估 Evaluation</a>
+<a href="#sec7">VII. 挑战与未来</a>
+<a href="#sec8">VIII. 结论</a>
+<div class="sep"></div>
+<a href="#diagram">🏗️ RAG 架构全景图</a>
+</nav>
+
+<div class="main">
+
+<!-- ABSTRACT -->
+<h2 id="abstract">摘要 Abstract</h2>
+<div class="en-block">
+Large Language Models (LLMs) showcase impressive capabilities but encounter challenges like <span class="hl">hallucination</span>, <span class="hl">outdated knowledge</span>, and <span class="hl">non-transparent, untraceable reasoning</span>. <span class="hl">Retrieval-Augmented Generation (RAG)</span> has emerged as a promising solution by incorporating knowledge from external databases. This enhances accuracy and credibility, particularly for <span class="hl">knowledge-intensive tasks</span>, and allows for continuous knowledge updates and integration of domain-specific information. This survey examines the progression of RAG paradigms: <span class="hl">Naive RAG</span>, <span class="hl">Advanced RAG</span>, and <span class="hl">Modular RAG</span>. It scrutinizes the tripartite foundation: <span class="hl">retrieval</span>, <span class="hl">generation</span>, and <span class="hl">augmentation</span> techniques, along with evaluation frameworks, benchmarks, challenges, and future directions.
+</div>
+<div class="cn-block">
+大语言模型 (LLM) 展现出令人瞩目的能力，但面临<span class="hl">幻觉</span>、<span class="hl">知识过时</span>和<span class="hl">推理不透明不可追溯</span>等挑战。<span class="hl">检索增强生成 (RAG)</span> 通过引入外部知识库中的信息，显著提升了准确性和可信度，尤其适用于<span class="hl">知识密集型任务</span>，并支持知识的持续更新和领域信息的整合。本综述系统梳理了 RAG 范式的演进：<span class="hl">朴素 RAG</span>、<span class="hl">高级 RAG</span> 和<span class="hl">模块化 RAG</span>。深入剖析了三大核心支柱——<span class="hl">检索</span>、<span class="hl">生成</span>、<span class="hl">增强</span>的技术细节，并涵盖了评估框架、基准测试、当前挑战与未来方向。
+</div>
+
+<h2 id="sec1">I. 引言 Introduction</h2>
+<div class="en-block">
+LLMs face significant limitations in <span class="hl">domain-specific</span> and <span class="hl">knowledge-intensive tasks</span>, notably producing <span class="hl">hallucinations</span> when handling queries beyond their training data. <span class="hl">RAG</span> addresses this by retrieving relevant document chunks from external knowledge bases through <span class="hl">semantic similarity calculation</span>. The development trajectory shows three stages: early work focused on <span class="hl">pre-training enhancement</span> with Transformers; the ChatGPT era shifted to <span class="hl">inference-stage RAG</span> leveraging in-context learning; recent work integrates RAG with <span class="hl">LLM fine-tuning</span>. This survey analyzes over 100 RAG studies across three paradigms.
+</div>
+<div class="cn-block">
+LLM 在<span class="hl">领域特定</span>和<span class="hl">知识密集型</span>任务中存在显著局限，特别是面对训练数据之外的问题时会产生<span class="hl">幻觉</span>。<span class="hl">RAG</span> 通过<span class="hl">语义相似度计算</span>从外部知识库检索相关文档片段来解决此问题。发展轨迹分三个阶段：早期聚焦于 Transformer 架构的<span class="hl">预训练增强</span>；ChatGPT 时代转向利用上下文学习的<span class="hl">推理阶段 RAG</span>；近期研究则将 RAG 与<span class="hl">LLM 微调</span>深度融合。本综述分析了 100 余篇 RAG 研究。
+</div>
+
+<div class="figure-box">
+<img src="2312.10997v5_assets/fig_p01.png" alt="RAG Technology Tree">
+<div class="caption">Fig 1: RAG 技术树。RAG 研究阶段包括预训练、微调和推理。随着 LLM 的兴起，RAG 研究最初聚焦于利用 LLM 强大的上下文学习能力（推理阶段），后续逐步与 LLM 微调技术深度融合。</div>
+</div>
+
+<h2 id="sec2">II. RAG 概览 Overview of RAG</h2>
+<div class="en-block">
+The paper categorizes RAG into three paradigms:<br><br>
+<b>1. <span class="hl">Naive RAG</span>:</b> The classic "Retrieve-Read" pipeline. <span class="hl">Indexing</span> → clean & chunk documents → encode into vectors → store in <span class="hl">vector database</span>. <span class="hl">Retrieval</span> → encode query → compute similarity → retrieve Top-K chunks. <span class="hl">Generation</span> → feed query + retrieved chunks into LLM → generate answer.<br><br>
+<b>2. <span class="hl">Advanced RAG</span>:</b> Enhances Naive RAG with <span class="hl">pre-retrieval</span> (query rewriting, routing) and <span class="hl">post-retrieval</span> (re-ranking, context compression) optimizations.<br><br>
+<b>3. <span class="hl">Modular RAG</span>:</b> Breaks the linear pipeline into interchangeable modules — <span class="hl">search</span>, <span class="hl">memory</span>, <span class="hl">fusion</span>, <span class="hl">routing</span>, <span class="hl">task adaptation</span> — enabling flexible composition for different scenarios.
+</div>
+<div class="cn-block">
+论文将 RAG 分为三种范式：<br><br>
+<b>1. <span class="hl">朴素 RAG</span>:</b> 经典的"检索-阅读"流水线。<span class="hl">索引</span>→清洗并分块文档→向量编码→存入<span class="hl">向量数据库</span>。<span class="hl">检索</span>→编码查询→计算相似度→取 Top-K 片段。<span class="hl">生成</span>→将查询+检索片段输入 LLM→生成答案。<br><br>
+<b>2. <span class="hl">高级 RAG</span>:</b> 在朴素 RAG 上增加<span class="hl">检索前</span>（查询重写、路由）和<span class="hl">检索后</span>（重排序、上下文压缩）优化。<br><br>
+<b>3. <span class="hl">模块化 RAG</span>:</b> 打破线性流程，变成可替换模块——<span class="hl">搜索</span>、<span class="hl">记忆</span>、<span class="hl">融合</span>、<span class="hl">路由</span>、<span class="hl">任务适配</span>——可灵活组合适配不同场景。
+</div>
+
+<div class="figure-box">
+<img src="2312.10997v5_assets/fig_p02.png" alt="RAG Process for QA">
+<div class="caption">Fig 2: RAG 问答流程示例。三步：(1) 索引 — 文档分块→向量编码→向量数据库；(2) 检索 — 查询编码→语义相似度→Top-K 相关块；(3) 生成 — 查询+检索块→LLM→最终答案。</div>
+</div>
+
+<h2 id="sec3">III. 检索 Retrieval</h2>
+<div class="en-block">
+Retrieval optimization spans three dimensions:<br><br>
+<b><span class="hl">Indexing Optimization</span>:</b> <span class="hl">Chunking strategies</span> (fixed-size, semantic, recursive), <span class="hl">metadata attachment</span> (timestamp, source, category for filtering), and <span class="hl">multi-representation indexing</span> (dense + sparse vectors, hybrid retrieval).<br><br>
+<b><span class="hl">Query Optimization</span>:</b> <span class="hl">Query rewriting</span> (using LLM to rephrase ambiguous queries), <span class="hl">query decomposition</span> (breaking complex queries into sub-queries), <span class="hl">HyDE</span> (generating hypothetical documents to bridge semantic gap), and <span class="hl">multi-query retrieval</span>.<br><br>
+<b><span class="hl">Embedding Optimization</span>:</b> Fine-tuning embedding models on domain-specific data, <span class="hl">task-aware embeddings</span>, and using LLMs themselves as embedding generators (e.g., LLM-Embedder).
+</div>
+<div class="cn-block">
+检索优化覆盖三个维度：<br><br>
+<b><span class="hl">索引优化</span>:</b> <span class="hl">分块策略</span>（固定长度、语义分块、递归分块）、<span class="hl">元数据附着</span>（时间戳、来源、类别用于过滤）、<span class="hl">多表示索引</span>（稠密向量+稀疏向量，混合检索）。<br><br>
+<b><span class="hl">查询优化</span>:</b> <span class="hl">查询重写</span>（用 LLM 改写模糊查询）、<span class="hl">查询分解</span>（将复杂查询拆分为子查询）、<span class="hl">HyDE</span>（生成假设文档来桥接语义鸿沟）、<span class="hl">多查询检索</span>。<br><br>
+<b><span class="hl">嵌入优化</span>:</b> 在领域数据上微调嵌入模型、<span class="hl">任务感知嵌入</span>、使用 LLM 本身作为嵌入生成器（如 LLM-Embedder）。
+</div>
+
+<div class="figure-box">
+<img src="2312.10997v5_assets/fig_p03.png" alt="RAG Paradigms Comparison">
+<div class="caption">Fig 3: 三种 RAG 范式对比。Naive RAG（线性流水线）→ Advanced RAG（增加检索前后优化）→ Modular RAG（模块化可替换组件，支持搜索、记忆、融合、路由等多模块灵活编排）。</div>
+</div>
+
+<h2 id="sec4">IV. 生成 Generation</h2>
+<div class="en-block">
+Post-retrieval processing and generation enhancements:<br><br>
+<b><span class="hl">Post-Retrieval Processing</span>:</b> <span class="hl">Re-ranking</span> (re-scoring retrieved chunks for relevance), <span class="hl">Context compression</span> (summarizing/compressing retrieved content to fit context window), and <span class="hl">Context curation</span> (selecting and ordering chunks for optimal prompt construction).<br><br>
+<b><span class="hl">LLM Fine-tuning for RAG</span>:</b> <span class="hl">Fine-tuning with retrieved context</span> (training LLMs to better utilize retrieved information), <span class="hl">instruction tuning</span> for RAG-specific behaviors, and <span class="hl">RLHF</span> to align responses with retrieved evidence.<br><br>
+<b><span class="hl">Controllable Generation</span>:</b> Mechanisms to ensure the LLM adheres to retrieved content, including <span class="hl">citation generation</span> (attributing claims to sources) and <span class="hl">faithfulness constraints</span> (preventing fabrication).
+</div>
+<div class="cn-block">
+检索后处理与生成增强：<br><br>
+<b><span class="hl">检索后处理</span>:</b> <span class="hl">重排序</span>（对检索块重新评分）、<span class="hl">上下文压缩</span>（压缩检索内容以适应上下文窗口）、<span class="hl">上下文编排</span>（选择排序块以构建最优提示词）。<br><br>
+<b><span class="hl">面向 RAG 的 LLM 微调</span>:</b> <span class="hl">带检索上下文的微调</span>（训练 LLM 更好利用检索信息）、<span class="hl">指令微调</span> RAG 专属行为、<span class="hl">RLHF</span> 对齐回答与检索证据。<br><br>
+<b><span class="hl">可控生成</span>:</b> 确保 LLM 遵循检索内容的机制，包括<span class="hl">引文生成</span>（将声明归于来源）和<span class="hl">忠实性约束</span>（防止捏造）。
+</div>
+
+<h2 id="sec5">V. 增强 Augmentation</h2>
+<div class="en-block">
+Three augmentation processes enhance RAG at different stages:<br><br>
+<b><span class="hl">1. Pre-training Augmentation</span>:</b> <span class="hl">RETRO</span> (Retrieval-Enhanced Transformer) integrates retrieval directly into pre-training, building a model that natively understands how to use retrieved information. <span class="hl">Atlas</span> jointly trains retriever and generator.<br><br>
+<b><span class="hl">2. Fine-tuning Augmentation</span>:</b> Augmenting the fine-tuning data with retrieved context to teach the model to leverage external knowledge. <span class="hl">RA-DIT</span> (Retrieval-Augmented Dual Instruction Tuning) is a representative approach.<br><br>
+<b><span class="hl">3. Inference Augmentation</span>:</b> The most common form — dynamically retrieving relevant information during inference. Key techniques include <span class="hl">iterative retrieval</span> (multi-hop reasoning), <span class="hl">recursive retrieval</span> (retrieval → generation → retrieval loop), and <span class="hl">adaptive retrieval</span> (deciding when retrieval is needed via model confidence).
+</div>
+<div class="cn-block">
+三个增强过程在不同阶段强化 RAG：<br><br>
+<b><span class="hl">1. 预训练增强</span>:</b> <span class="hl">RETRO</span>（检索增强 Transformer）将检索直接集成到预训练中，构建原生理解如何使用检索信息的模型。<span class="hl">Atlas</span> 联合训练检索器和生成器。<br><br>
+<b><span class="hl">2. 微调增强</span>:</b> 用检索上下文增强微调数据，教会模型利用外部知识。<span class="hl">RA-DIT</span>（检索增强双指令微调）是代表性方法。<br><br>
+<b><span class="hl">3. 推理增强</span>:</b> 最常见的形式——推理时动态检索。关键技术包括<span class="hl">迭代检索</span>（多跳推理）、<span class="hl">递归检索</span>（检索→生成→检索循环）和<span class="hl">自适应检索</span>（通过模型置信度判断何时需要检索）。
+</div>
+
+<div class="figure-box">
+<img src="2312.10997v5_assets/fig_p04.png" alt="Augmentation Process">
+<div class="caption">Fig 4: RAG 增强过程分类。预训练增强（RETRO/Atlas）、微调增强（RA-DIT）、推理增强（迭代/递归/自适应检索），覆盖模型生命周期的三个阶段。</div>
+</div>
+
+<h2 id="sec6">VI. 评估 Evaluation</h2>
+<div class="en-block">
+The paper summarizes RAG evaluation across <span class="hl">26 tasks</span> and nearly <span class="hl">50 datasets</span>:<br><br>
+<b><span class="hl">Downstream Tasks</span>:</b> <span class="hl">Open-domain QA</span> (Natural Questions, TriviaQA), <span class="hl">Multi-hop reasoning</span> (HotpotQA, 2WikiMultihopQA), <span class="hl">Fact verification</span> (FEVER), <span class="hl">Dialogue</span>, <span class="hl">Summarization</span>, <span class="hl">Code generation</span>.<br><br>
+<b><span class="hl">Evaluation Metrics</span>:</b> <span class="hl">Faithfulness</span> (does the answer match retrieved evidence?), <span class="hl">Answer Relevance</span>, <span class="hl">Context Relevance</span>, <span class="hl">Noise Robustness</span> (handling irrelevant retrieved documents).<br><br>
+<b><span class="hl">Benchmarks & Tools</span>:</b> <span class="hl">RAGAS</span>, <span class="hl">ARES</span>, <span class="hl">TruLens</span> for automated RAG evaluation; <span class="hl">RGB</span>, <span class="hl">RECALL</span> benchmarks.
+</div>
+<div class="cn-block">
+论文总结了覆盖 <span class="hl">26 个任务</span>和近 <span class="hl">50 个数据集</span>的 RAG 评估体系：<br><br>
+<b><span class="hl">下游任务</span>:</b> <span class="hl">开放域问答</span>（Natural Questions, TriviaQA）、<span class="hl">多跳推理</span>（HotpotQA, 2WikiMultihopQA）、<span class="hl">事实验证</span>（FEVER）、<span class="hl">对话</span>、<span class="hl">摘要</span>、<span class="hl">代码生成</span>。<br><br>
+<b><span class="hl">评估指标</span>:</b> <span class="hl">忠实性</span>（答案是否匹配检索证据？）、<span class="hl">答案相关性</span>、<span class="hl">上下文相关性</span>、<span class="hl">噪声鲁棒性</span>（处理无关检索文档的能力）。<br><br>
+<b><span class="hl">基准与工具</span>:</b> <span class="hl">RAGAS</span>、<span class="hl">ARES</span>、<span class="hl">TruLens</span> 用于自动化 RAG 评估；<span class="hl">RGB</span>、<span class="hl">RECALL</span> 基准测试。
+</div>
+
+<h2 id="sec7">VII. 挑战与未来 Challenges & Future</h2>
+<div class="en-block">
+Key challenges and future directions:<br><br>
+<b><span class="hl">Long Context & Multi-hop</span>:</b> How to effectively handle long documents and multi-step reasoning chains. Emerging solutions: <span class="hl">iterative RAG</span>, <span class="hl">graph-based RAG</span>.<br><br>
+<b><span class="hl">Multi-modal RAG</span>:</b> Extending retrieval to images, tables, code — not just text. <span class="hl">MM-RAG</span> approaches integrate vision encoders.<br><br>
+<b><span class="hl">Robustness & Trust</span>:</b> Handling <span class="hl">noisy retrieval</span>, <span class="hl">adversarial attacks</span> on retrievers, and ensuring the system knows when to say "I don't know."<br><br>
+<b><span class="hl">RAG Ecosystem</span>:</b> The need for standardized evaluation, <span class="hl">RAG-as-a-Service</span>, and integration with <span class="hl">AI Agents</span> for autonomous knowledge workflows.
+</div>
+<div class="cn-block">
+关键挑战与未来方向：<br><br>
+<b><span class="hl">长上下文与多跳推理</span>:</b> 如何有效处理长文档和多步推理链。新兴方案：<span class="hl">迭代 RAG</span>、<span class="hl">图基 RAG</span>。<br><br>
+<b><span class="hl">多模态 RAG</span>:</b> 将检索扩展到图像、表格、代码——不只文本。<span class="hl">MM-RAG</span> 方法整合视觉编码器。<br><br>
+<b><span class="hl">鲁棒性与信任</span>:</b> 处理<span class="hl">噪声检索</span>、针对检索器的<span class="hl">对抗攻击</span>、确保系统知道何时说"我不知道"。<br><br>
+<b><span class="hl">RAG 生态</span>:</b> 需要标准化评估、<span class="hl">RAG 即服务</span>、与<span class="hl">AI Agent</span> 集成实现自主知识工作流。
+</div>
+
+<div class="figure-box">
+<img src="2312.10997v5_assets/fig_p05.png" alt="Challenges and Future">
+<div class="caption">Fig 5: RAG 未来方向。包括垂直领域优化、多模态 RAG、RAG 生态系统建设，以及与 AI Agent 的深度融合。</div>
+</div>
+
+<h2 id="sec8">VIII. 结论 Conclusion</h2>
+<div class="en-block">
+RAG represents a fundamental paradigm for bridging <span class="hl">parametric knowledge</span> (stored in model weights) with <span class="hl">non-parametric knowledge</span> (external databases). The evolution from Naive → Advanced → Modular RAG reflects a trend toward <span class="hl">flexible, composable architectures</span>. Key takeaways: (1) <span class="hl">Retrieval quality</span> is the foundation — poor retrieval poisons generation; (2) <span class="hl">Augmentation timing</span> matters — pre-training, fine-tuning, and inference each offer different benefits; (3) <span class="hl">Evaluation is evolving</span> — from simple QA accuracy to multi-dimensional metrics (faithfulness, relevance, robustness). RAG is not just a technique but an <span class="hl">architectural paradigm</span> that will underpin the next generation of trustworthy AI systems.
+</div>
+<div class="cn-block">
+RAG 代表了连接<span class="hl">参数化知识</span>（存储于模型权重）与<span class="hl">非参数化知识</span>（外部数据库）的基础范式。从朴素→高级→模块化 RAG 的演进反映了向<span class="hl">灵活、可组合架构</span>发展的趋势。核心启示：(1) <span class="hl">检索质量</span>是基础——糟糕的检索毒化生成；(2) <span class="hl">增强时机</span>很重要——预训练、微调和推理各提供不同优势；(3) <span class="hl">评估体系在进化</span>——从简单问答准确率到多维度指标（忠实性、相关性、鲁棒性）。RAG 不仅是一种技术，更是支撑下一代可信 AI 系统的<span class="hl">架构范式</span>。
+</div>
+
+<div class="figure-box">
+<img src="2312.10997v5_assets/fig_p06.png" alt="RAG System Architecture">
+<div class="caption">Fig 6: RAG 系统全貌。涵盖检索、生成、增强三大核心组件的完整技术栈，以及它们在预训练、微调、推理各阶段的交互关系。</div>
+</div>
+
+</div><!-- /main -->
+
+<div class="sidebar">
+<h3>📖 术语表 Glossary</h3>
+<div class="glossary-item"><div class="term">RAG (检索增强生成)</div><div class="def">在 LLM 生成答案前，先从外部知识库检索相关文档片段，将检索结果与原始查询一起输入模型。核心三阶段：索引→检索→生成。</div></div>
+<div class="glossary-item"><div class="term">Hallucination (幻觉)</div><div class="def">LLM 生成看似合理但事实错误的内容。RAG 通过引入外部知识有效减少幻觉。</div></div>
+<div class="glossary-item"><div class="term">Naive RAG (朴素 RAG)</div><div class="def">最基础的"检索-阅读"流水线：分块→向量化→相似度检索→Top-K→LLM 生成。简单但容易检索到不相关内容。</div></div>
+<div class="glossary-item"><div class="term">Advanced RAG (高级 RAG)</div><div class="def">在朴素 RAG 上增加检索前（查询重写/路由）和检索后（重排序/上下文压缩）优化。</div></div>
+<div class="glossary-item"><div class="term">Modular RAG (模块化 RAG)</div><div class="def">将 RAG 流程拆分为可替换的功能模块（搜索、记忆、融合、路由等），可灵活编排适配不同场景。</div></div>
+<div class="glossary-item"><div class="term">Vector Database (向量数据库)</div><div class="def">存储文档块的向量表示，支持高效的语义相似度搜索。RAG 检索的核心基础设施。</div></div>
+<div class="glossary-item"><div class="term">Chunking (分块)</div><div class="def">将长文档切分为小块以适应 LLM 上下文窗口。策略：固定长度、语义分块、递归分块。直接影响检索质量。</div></div>
+<div class="glossary-item"><div class="term">Re-ranking (重排序)</div><div class="def">对初步检索结果用更精确的模型重新评分排序，提升 Top-K 片段的相关性。</div></div>
+<div class="glossary-item"><div class="term">HyDE</div><div class="def">Hypothetical Document Embeddings：先生成假设答案文档→用假设文档的向量去检索，桥接查询与文档之间的语义鸿沟。</div></div>
+<div class="glossary-item"><div class="term">RETRO</div><div class="def">Retrieval-Enhanced Transformer：DeepMind 提出的将检索直接整合进预训练的模型架构。</div></div>
+<div class="glossary-item"><div class="term">RA-DIT</div><div class="def">Retrieval-Augmented Dual Instruction Tuning：Meta 提出的双指令微调方法，同时优化检索器和生成器。</div></div>
+<div class="glossary-item"><div class="term">Iterative RAG (迭代 RAG)</div><div class="def">多轮检索→生成的循环过程，适用于多跳推理场景（需要多个检索步骤才能回答的问题）。</div></div>
+<div class="glossary-item"><div class="term">RAGAS</div><div class="def">自动化 RAG 评估框架，评测忠实性、答案相关性、上下文相关性等指标。</div></div>
+
+<h3>🧮 RAG 核心流程</h3>
+<div class="mini-formula">1. Indexing: Docs → Chunk → Embed → VectorDB</div>
+<div class="mini-formula">2. Retrieval: Query → Embed → Similarity → Top-K</div>
+<div class="mini-formula">3. Generation: (Query + Chunks) → LLM → Answer</div>
+
+<h3>📊 三种范式对比</h3>
+<table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;">
+<tr style="background:var(--surface);color:var(--highlight);"><td style="padding:6px 10px;border:1px solid var(--border);">范式</td><td style="padding:6px 10px;border:1px solid var(--border);">特点</td><td style="padding:6px 10px;border:1px solid var(--border);">代表</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">Naive</td><td style="padding:6px 10px;border:1px solid var(--border);">线性流水线</td><td style="padding:6px 10px;border:1px solid var(--border);">基础 RAG</td></tr>
+<tr style="background:var(--surface);"><td style="padding:6px 10px;border:1px solid var(--border);">Advanced</td><td style="padding:6px 10px;border:1px solid var(--border);">检索前后优化</td><td style="padding:6px 10px;border:1px solid var(--border);">HyDE, Re-rank</td></tr>
+<tr><td style="padding:6px 10px;border:1px solid var(--border);">Modular</td><td style="padding:6px 10px;border:1px solid var(--border);">可替换模块</td><td style="padding:6px 10px;border:1px solid var(--border);">Search+Memory+Fusion</td></tr>
+</table>
+
+<h3>📎 论文信息</h3>
+<div class="ref-box">
+<b>Title:</b> Retrieval-Augmented Generation for Large Language Models: A Survey<br>
+<b>Authors:</b> Yunfan Gao, Yun Xiong, Xinyu Gao, Kangxiang Jia, Jinliu Pan, Yuxi Bi, Yi Dai, Jiawei Sun, Meng Wang, Haofen Wang<br>
+<b>Institutions:</b> Tongji University, Fudan University<br>
+<b>arXiv:</b> 2312.10997v5 (2024)<br>
+<b>Pages:</b> 21 · <b>Figures:</b> 6<br>
+<b>GitHub:</b> github.com/Tongji-KGLLM/RAG-Survey
+</div>
+</div>
+</div>
+
+<div class="diagram-section" id="diagram">
+<h2>🏗️ RAG 架构全景图</h2>
+<svg class="diagram" viewBox="0 0 1060 700" width="100%" style="max-width:1060px;">
+<defs>
+<linearGradient id="gIdx" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#1f6feb"/></linearGradient>
+<linearGradient id="gRet" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#2ea043"/></linearGradient>
+<linearGradient id="gGen" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#a371f7"/><stop offset="100%" stop-color="#8250df"/></linearGradient>
+<linearGradient id="gAug" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#f0c040"/><stop offset="100%" stop-color="#d4a017"/></linearGradient>
+<marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6 Z" fill="#8b949e"/></marker>
+</defs>
+<rect x="0" y="0" width="1060" height="700" rx="12" fill="#0d1117" stroke="#30363d" stroke-width="1.5"/>
+
+<!-- STAGE 1: INDEXING -->
+<text x="530" y="32" text-anchor="middle" fill="#58a6ff" font-size="14" font-weight="700">① 索引 Indexing</text>
+<rect x="25" y="48" width="195" height="50" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1"/>
+<text x="122" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">📄 Raw Documents</text>
+<text x="122" y="88" text-anchor="middle" fill="#8b949e" font-size="10">PDF / HTML / MD / Word</text>
+<line x1="220" y1="73" x2="255" y2="73" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="260" y="48" width="175" height="50" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1"/>
+<text x="347" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">✂️ Chunking</text>
+<text x="347" y="88" text-anchor="middle" fill="#8b949e" font-size="10">Fixed / Semantic / Recursive</text>
+<line x1="435" y1="73" x2="470" y2="73" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="475" y="48" width="195" height="50" rx="8" fill="#161b22" stroke="#58a6ff" stroke-width="1"/>
+<text x="572" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">🔢 Embedding</text>
+<text x="572" y="88" text-anchor="middle" fill="#8b949e" font-size="10">Dense + Sparse Vectors</text>
+<line x1="670" y1="73" x2="705" y2="73" stroke="#58a6ff" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="710" y="48" width="195" height="50" rx="8" fill="url(#gIdx)" opacity="0.85"/>
+<text x="807" y="70" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">🗄️ Vector Database</text>
+<text x="807" y="88" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">Pinecone / Milvus / Weaviate</text>
+
+<!-- STAGE 2: RETRIEVAL -->
+<text x="530" y="132" text-anchor="middle" fill="#3fb950" font-size="14" font-weight="700">② 检索 Retrieval</text>
+<rect x="60" y="148" width="200" height="70" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<text x="160" y="172" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">❓ User Query</text>
+<text x="160" y="192" text-anchor="middle" fill="#8b949e" font-size="10">Query Rewriting</text>
+<text x="160" y="207" text-anchor="middle" fill="#8b949e" font-size="10">Query Decomposition</text>
+<line x1="260" y1="183" x2="295" y2="183" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="300" y="148" width="200" height="70" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<text x="400" y="172" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">🔍 Similarity Search</text>
+<text x="400" y="192" text-anchor="middle" fill="#8b949e" font-size="10">Cosine / Dot Product</text>
+<text x="400" y="207" text-anchor="middle" fill="#8b949e" font-size="10">HyDE · Multi-Query</text>
+<line x1="500" y1="183" x2="535" y2="183" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="540" y="148" width="200" height="70" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<text x="640" y="172" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">📊 Top-K Chunks</text>
+<text x="640" y="192" text-anchor="middle" fill="#8b949e" font-size="10">Re-ranking</text>
+<text x="640" y="207" text-anchor="middle" fill="#8b949e" font-size="10">Context Compression</text>
+<line x1="740" y1="183" x2="775" y2="183" stroke="#3fb950" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="780" y="148" width="195" height="70" rx="8" fill="#161b22" stroke="#3fb950" stroke-width="1"/>
+<text x="877" y="172" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">📋 Context Curation</text>
+<text x="877" y="192" text-anchor="middle" fill="#8b949e" font-size="10">Selection & Ordering</text>
+<text x="877" y="207" text-anchor="middle" fill="#8b949e" font-size="10">→ Prompt Assembly</text>
+
+<!-- STAGE 3: GENERATION -->
+<text x="530" y="252" text-anchor="middle" fill="#a371f7" font-size="14" font-weight="700">③ 生成 Generation</text>
+<rect x="120" y="268" width="260" height="60" rx="8" fill="#1a1020" stroke="#a371f7" stroke-width="1.5"/>
+<text x="250" y="293" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700">🧠 LLM</text>
+<text x="250" y="314" text-anchor="middle" fill="#8b949e" font-size="10">GPT-4 · Claude · Gemini · Llama</text>
+<line x1="380" y1="298" x2="430" y2="298" stroke="#a371f7" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="435" y="268" width="240" height="60" rx="8" fill="#1a1020" stroke="#a371f7" stroke-width="1.5"/>
+<text x="555" y="293" text-anchor="middle" fill="#a371f7" font-size="12" font-weight="700">📝 Generation Techniques</text>
+<text x="555" y="314" text-anchor="middle" fill="#8b949e" font-size="10">Fine-tuning · RLHF · Citation</text>
+<line x1="675" y1="298" x2="715" y2="298" stroke="#a371f7" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="720" y="268" width="220" height="60" rx="8" fill="url(#gGen)" opacity="0.85"/>
+<text x="830" y="293" text-anchor="middle" fill="#fff" font-size="12" font-weight="700">✅ Final Answer</text>
+<text x="830" y="314" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="10">Verified & Cited</text>
+
+<!-- STAGE 4: AUGMENTATION LAYERS -->
+<text x="530" y="362" text-anchor="middle" fill="#f0c040" font-size="14" font-weight="700">④ 增强 Augmentation (贯穿全流程)</text>
+<rect x="40" y="380" width="310" height="65" rx="8" fill="#1a180a" stroke="#f0c040" stroke-width="1"/>
+<text x="195" y="405" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🅰️ Pre-training Augmentation</text>
+<text x="195" y="428" text-anchor="middle" fill="#8b949e" font-size="10">RETRO · Atlas — 检索直接嵌入预训练</text>
+<rect x="375" y="380" width="310" height="65" rx="8" fill="#1a180a" stroke="#f0c040" stroke-width="1"/>
+<text x="530" y="405" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🅱️ Fine-tuning Augmentation</text>
+<text x="530" y="428" text-anchor="middle" fill="#8b949e" font-size="10">RA-DIT · 用检索上下文增强微调数据</text>
+<rect x="710" y="380" width="310" height="65" rx="8" fill="#1a180a" stroke="#f0c040" stroke-width="1"/>
+<text x="865" y="405" text-anchor="middle" fill="#f0c040" font-size="12" font-weight="700">🅲 Inference Augmentation</text>
+<text x="865" y="428" text-anchor="middle" fill="#8b949e" font-size="10">Iterative · Recursive · Adaptive Retrieval</text>
+
+<!-- THREE PARADIGMS -->
+<text x="530" y="482" text-anchor="middle" fill="#8b949e" font-size="12" font-weight="700">📐 三种范式进化 Three Paradigms</text>
+<rect x="40" y="498" width="310" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+<text x="195" y="520" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Naive RAG</text>
+<text x="195" y="538" text-anchor="middle" fill="#8b949e" font-size="10">Index → Retrieve → Generate (线性)</text>
+<line x1="350" y1="523" x2="375" y2="523" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="380" y="498" width="300" height="50" rx="8" fill="#161b22" stroke="#8b949e" stroke-width="1"/>
+<text x="530" y="520" text-anchor="middle" fill="#fff" font-size="13" font-weight="700">Advanced RAG</text>
+<text x="530" y="538" text-anchor="middle" fill="#8b949e" font-size="10">+ Pre-retrieval + Post-retrieval 优化</text>
+<line x1="680" y1="523" x2="705" y2="523" stroke="#8b949e" stroke-width="1.5" marker-end="url(#arr)"/>
+<rect x="710" y="498" width="310" height="50" rx="8" fill="#161b22" stroke="#f0c040" stroke-width="1.5"/>
+<text x="865" y="520" text-anchor="middle" fill="#f0c040" font-size="13" font-weight="700">Modular RAG</text>
+<text x="865" y="538" text-anchor="middle" fill="#8b949e" font-size="10">Search · Memory · Fusion · Routing · Task</text>
+
+<!-- EVALUATION BAR -->
+<text x="530" y="582" text-anchor="middle" fill="#f85149" font-size="12" font-weight="700">📊 评估体系 Evaluation</text>
+<rect x="40" y="596" width="980" height="42" rx="8" fill="#1a1010" stroke="#f85149" stroke-width="1"/>
+<text x="530" y="614" text-anchor="middle" fill="#f85149" font-size="11" font-weight="700">26 Tasks · 50 Datasets</text>
+<text x="530" y="630" text-anchor="middle" fill="#8b949e" font-size="10">Open-domain QA | Multi-hop | Fact Verification | Dialogue | Summarization | Code Gen &nbsp;|&nbsp; RAGAS · ARES · TruLens</text>
+
+<!-- BOTTOM BAR -->
+<rect x="40" y="654" width="980" height="32" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+<text x="530" y="675" text-anchor="middle" fill="#8b949e" font-size="11">Gao et al. (2024) · Tongji University & Fudan University · arXiv: 2312.10997v5 · github.com/Tongji-KGLLM/RAG-Survey</text>
+</svg>
+</div>
+
+<script>
+(function(){
+const nav=document.querySelector('.nav');if(!nav)return;
+const links=nav.querySelectorAll('a[href^="#"]');
+const sections=[...links].map(a=>document.getElementById(a.getAttribute('href').slice(1))).filter(Boolean);
+function update(){let c='';for(let i=sections.length-1;i>=0;i--){const r=sections[i].getBoundingClientRect();if(r.top<=120){c=sections[i].id;break}}links.forEach(a=>{const id=a.getAttribute('href').slice(1);a.classList.toggle('active',id===c)})}
+window.addEventListener('scroll',update,{passive:true});update();
+links.forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const el=document.getElementById(a.getAttribute('href').slice(1));if(el)el.scrollIntoView({behavior:'smooth',block:'start'})})});
+})();
+</script>
+</body>
+</html>
