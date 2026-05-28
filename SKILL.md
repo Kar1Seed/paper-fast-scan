@@ -82,10 +82,13 @@ For local PDF files (typically arXiv papers):
 
 4. **Extract figures**: PDF images are embedded per-page. Save them to `{paper_dir}/{arxiv_id}_assets/fig_p{NN}.{ext}`. Reference them in HTML as relative paths: `<img src="2312.10997v5_assets/fig_p01.png">`.
 
-5. **LaTeX formula handling**: Academic PDFs often contain LaTeX formulas (e.g., `\frac{a}{b}`, `\mathcal{L}`). The raw text extraction won't render them. Either:
-   - Keep the LaTeX source as-is in `<div class="formula-box">` for readers who know LaTeX
-   - Describe the formula in natural language in the Chinese translation
-   - Do NOT attempt to fabricate formula renderings
+5. **LaTeX formula handling**: Academic PDFs often contain LaTeX formulas. Use **KaTeX** for rendering in the HTML output. The paper.html template already includes KaTeX CDN links and auto-render. Usage:
+   - `$$...$$` for display (centered block) formulas
+   - `$...$` for inline formulas
+   - `\[...\]` and `\(...\)` also supported
+   - Wrap in `<div class="formula-box">` for the styled box appearance
+   - Examples: `$$\text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$`
+   - Dark theme: KaTeX elements are styled to match with `.katex{color:var(--highlight)}`
 
 6. **Paper structure**: Academic papers have a standard structure (Abstract → Introduction → Methodology → Experiments → Conclusion). Map this to the HTML section hierarchy. Include the paper metadata in a header bar (title, authors, institution, arXiv ID, page count, figure count).
 
@@ -122,10 +125,27 @@ Deliver a single self-contained `.html` file. Do NOT use markdown — the user o
 
 **Content guidelines:**
 - Each major concept gets 1 EN block + 1 CN block
-- Formulas go in `<div class="formula-box">` with monospace font
+- Formulas go in `<div class="formula-box">` with `$$...$$` KaTeX delimiters
 - Worked examples go in `<div class="example-box">` with green styling
 - Keep Chinese natural — don't transliterate, rephrase in idiomatic Chinese
 - Highlight core Web3 terminology: AMM, CLOB, DEX, CEX, liquidation, margin, collateral, mark price, appchain, MPC, TEE, etc.
+
+**🔴 Nav-Content Consistency (MANDATORY VALIDATION):**
+Every section in the left navigation `<nav>` MUST have a corresponding `<h2 id="...">` with EN+CN content blocks in the main column. After writing the HTML, mentally walk through every nav link and verify:
+- Does this ID exist in the document? → Must match an `<h2 id="...">` or `<h3 id="...">`
+- Does it have BOTH an EN block and a CN block? → Every heading must be followed by `.en-block` + `.cn-block`
+- If a section is summarized/shortened (acceptable for 10+ paper batches), either: (a) keep the heading with condensed content, or (b) remove the nav link. NEVER leave a nav link pointing to a missing section.
+
+**Batch QC script:** After generating multiple HTML files, run this validation:
+```bash
+for f in /e/中英对照论文/**/*.html; do
+  nav_sections=$(grep -oP 'href="#([^"]+)"' "$f" | sed 's/href="#//')
+  content_sections=$(grep -oP '<h2 id="([^"]+)"' "$f" | sed 's/<h2 id="//')
+  for s in $nav_sections; do
+    echo "$content_sections" | grep -q "^$s$" || echo "⚠️ $f: nav has #$s but no content"
+  done
+done
+```
 
 **Glossary sidebar entries:**
 - Term (yellow, bold) + one-sentence plain explanation
@@ -143,12 +163,34 @@ After delivering the HTML, ask the user:
 
 ### Phase 5: Package & Publish (if user wants to open-source)
 
-When the user wants to publish the skill to GitHub:
+When the user wants to publish the skill as a standalone distributable package:
 
-1. **Add README.md** — Project intro, quick start, screenshot, supported platforms, template variables table, license note. See `references/packaging-checklist.md` for the full template.
-2. **Add LICENSE** — MIT by default (user: Kar1Seed).
-3. **Add screenshots** — User will provide. Copy to `examples/` directory. Update README image references.
-4. **GitHub push**:
+1. **Target directory**: `E:\skill\<skill-name>\` — a self-contained directory that anyone can copy and use. Lives alongside the Hermes-managed copy at `~/.hermes/skills/`.
+
+2. **Package structure** (`mkdir -p` then populate):
+   ```
+   E:\skill\paper-fast-scan\
+   ├── README.md              ← Install + examples
+   ├── LICENSE                ← MIT
+   ├── requirements.txt       ← pip deps
+   ├── SKILL.md               ← Agent workflow
+   ├── ROADMAP.md             ← Version plan
+   ├── scripts/
+   │   └── install.py         ← One-click setup
+   ├── templates/
+   │   ├── page.html          ← Web whitepaper
+   │   └── paper.html         ← Academic paper
+   ├── docs/
+   │   └── architecture-roadmap.html  ← Visual architecture
+   └── examples/
+       └── *.html             ← Output samples
+   ```
+
+3. **Sync to GitHub**: Copy files to `E:\GitHub\<repo>\`, commit, push via `git@github.com:` URLs.
+
+4. **Create GitHub Issues** from ROADMAP.md: `gh issue create --title "v2.x: Feature" --body "..."`. One per major feature.
+
+5. **⚠️** `gh repo create --push` fails without commits. Always: create repo → commit → push, three separate steps.
    ```bash
    cd <skill-dir>
    git init && git checkout -b main
@@ -164,7 +206,12 @@ When the user wants to publish the skill to GitHub:
 
 ## HTML Template Reference
 
-The full i18n-ready template is at `templates/page.html`. It uses `{{PLACEHOLDER}}` variables:
+Two templates are available — pick based on the source type:
+
+- **`templates/page.html`** — Web whitepapers and documentation (GitBook, ReadTheDocs, Docusaurus)
+- **`templates/paper.html`** — Academic PDF papers (arXiv, local PDFs) with figure embedding, metadata header, and paper-specific structure
+
+### Web Whitepaper Template (`page.html`)
 
 | Placeholder | Replaced with |
 |-------------|---------------|
@@ -183,6 +230,23 @@ The full i18n-ready template is at `templates/page.html`. It uses `{{PLACEHOLDER
 | `{{DIAGRAM_TITLE}}` | Architecture diagram heading |
 | `{{SVG_DIAGRAM}}` | SVG markup |
 
+### Academic Paper Template (`paper.html`)
+
+| Placeholder | Replaced with |
+|-------------|---------------|
+| `{{PAPER_TITLE}}` | Full paper title |
+| `{{PAPER_AUTHORS}}` | Author names with affiliations |
+| `{{PAPER_META}}` | arXiv ID · pages · figures · institution |
+| `{{NAV_ITEMS}}` | Navigation links |
+| `{{CONTENT}}` | Main bilingual content (EN blocks + CN blocks + figure-boxes) |
+| `{{GLOSSARY}}` | Glossary entries |
+| `{{FORMULAS}}` | Formula blocks |
+| `{{TABLE_DATA}}` | Optional data tables |
+| `{{REFERENCES}}` | Paper metadata box |
+| `{{SVG_DIAGRAM}}` | Architecture/overview SVG |
+| `{{DIAGRAM_TITLE}}` | Diagram section heading |
+| `{{EXAMPLE_LABEL}}` | Label for example boxes |
+
 **I18N mechanism:** The template uses CSS custom properties (`--ui-source-label`, `--ui-target-label`) controlled by `data-lang` on `<html>`. The template ships with `zh`, `ja`, `ko`, and `en` language packs. The AI sets `data-lang` and fills placeholders in the matching language.
 
 ## Pitfalls
@@ -193,11 +257,18 @@ The full i18n-ready template is at `templates/page.html`. It uses `{{PLACEHOLDER
 - **Don't guess** formulas. Only include what's explicitly in the whitepaper. If a formula is unclear (LaTeX garbled by HTML scraping), flag it rather than fabricating.
 - **SVG diagrams**: keep `viewBox` dimensions proportional. Use layers: top=users, middle=core product, bottom=infrastructure/external. Color-code: blue for users, purple for core product, green for chain infra, orange for bridges/vaults, grey for external chains.
 - **File size**: Keep under 60KB. Don't inline fonts or images.
+- **Nav-content mismatch**: When batch-processing 10+ papers, it's easy to write a nav link for a section and forget to include the content. The QLoRA paper had this bug — nav listed "实验" but content was missing. Always run the batch QC script after multi-paper sessions. Every `<a href="#secN">` must have a matching `<h2 id="secN">` with EN+CN blocks.
+- **DeepSeek vision limitation**: The DeepSeek provider does NOT support images — `vision_analyze` fails with `unknown variant image_url`. If the user asks you to read text from an image, you cannot. Ask them to describe/paste the text instead. Do NOT loop retrying vision_analyze with smaller images — the issue is the provider, not the image size. PIL resize/Pillow won't help.
+- **ArXiv bulk download (China proxy)**: Python `urllib` with `ProxyHandler` does NOT work for arXiv PDF downloads (returns URLError). Use `curl -x http://127.0.0.1:7890` from terminal instead. Pattern: `curl -sL --connect-timeout 30 -x http://127.0.0.1:7890 -o output.pdf "https://arxiv.org/pdf/{id}.pdf"`. See `references/arxiv-bulk-download.md` for the batch download script pattern.
+- **Batch paper processing strategy**: When converting 10+ papers, do NOT try to process all in one turn — it will blow the context window. Workflow: (1) extract all text + images with pymupdf in one background terminal call, (2) process 4 papers per message, (3) tell the user how many remain after each batch. The user's expression of "同时把我们的工具用上给他转了" means: for each paper, produce BOTH the original PDF and the bilingual HTML conversion in the same directory.
+- **Paper directory convention**: Each named paper gets its own `_assets/` subfolder (e.g., `Transformer_assets/`) in the same directory as the HTML. The original PDF stays alongside both. Pattern: `{dir}/{arxiv_id}_{short_name}.pdf` + `{dir}/{short_name}.html` + `{dir}/{short_name}_assets/fig_p*.png`.
 - **Desktop path** on the user's Windows machine is `C:\Users\Administrator\Desktop\`.
-- **Paper storage path**: the user stores academic papers at `E:\中英对照论文\`. Output filenames MUST follow the pattern `{中文名}-{英文名}.html`. Extract the paper title from the PDF and create a concise Chinese+English name.
+- **Paper storage path**: the user stores academic papers at `E:\\中英对照论文\\`. Output filenames MUST follow the pattern `{中文名}-{英文名}.html`. Extract the paper title from the PDF and create a concise Chinese+English name. See `references/ai-paper-directory.md` for the full topic-organized directory structure and canonical arXiv ID reference.
 - **PDF tools**: `pymupdf`, `pdfplumber`, `pillow` are installed on the user's Windows Python (`/c/Users/Administrator/AppData/Local/Programs/Python/Python312/python.exe`). Do NOT try to import them in `execute_code` — use `terminal` with the full Python path.
 - **PDF image extraction**: `pymupdf` extracts images per-page. The `extract_image(xref)` method returns a dict with `image` (bytes) and `ext` (format). Save to an `_assets/` subdirectory next to the HTML and reference with relative paths.
 - **`gh repo create --push`** fails if the repo has zero commits. Always: (1) `gh repo create` without `--push`, (2) `git add -A && git commit`, (3) `git push -u origin main`. Do not combine into one command.
+- **`cp -r` on Windows bash**: if a target path exists as a file (not a directory), `cp -r src/* target/` fails with "Not a directory". Run `mkdir -p target/` first, then copy.
+- **Architecture roadmap**: the project includes `docs/architecture-roadmap.html` — a standalone visual architecture diagram with 5-layer SVG showing current modules (solid) and future modules (dashed). Use this when the user asks about the project vision, future features, or wants to communicate the roadmap to others. The companion `ROADMAP.md` lists features by version with priorities (P0/P1/P2).
 
 ## Example Output
 

@@ -67,6 +67,7 @@ Open these in your browser to see the output:
 | `examples/sosovalue-whitepaper.html` | Web platform whitepaper | sosovalue.gitbook.io |
 | `examples/hyperliquid-whitepaper.html` | Web L1 docs | hyperliquid.gitbook.io |
 | `examples/rag-survey.html` | Academic PDF paper | arXiv 2312.10997v5 |
+| `examples/qlora-efficient-finetuning.html` | Academic PDF paper (KaTeX math) | arXiv 2305.14314 |
 
 ## File Structure
 
